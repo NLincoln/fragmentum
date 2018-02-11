@@ -1,8 +1,8 @@
-import { select, eq, value } from "./builder";
+import { select, eq, value, Builder } from "./builder";
 
-const testQuery = (name: string, query: object, expected: string) =>
+const testQuery = (name: string, query: Builder, expected: string) =>
   test(name, () => {
-    expect(query.toString()).toEqual(expected);
+    expect(query.serialize()).toEqual(expected);
   });
 
 describe("select statements", () => {

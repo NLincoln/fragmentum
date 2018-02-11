@@ -10,14 +10,14 @@ const serializeColumns = (columns: Array<string>) => {
   }
 };
 
-export const value = (value: string) => new RawValue(value);
+export const value = (value: string | number) => new RawValue(value);
 
 export const eq = (lhs: Expression | string, rhs: Expression | string) => {
   const normalizeOperand = (operand: Expression | string): Expression => {
-    if (typeof operand === "string") {
-      return new Identifier(operand);
-    } else {
+    if (operand instanceof Expression) {
       return operand;
+    } else {
+      return new Identifier(operand);
     }
   };
   return new BinaryExpression(
@@ -27,36 +27,32 @@ export const eq = (lhs: Expression | string, rhs: Expression | string) => {
   );
 };
 
-class Value {
-  constructor(private _value: string | number) {}
-}
-
 abstract class Expression {
   abstract clone(): Expression;
-  abstract toString(): string;
+  abstract serialize(): string;
 }
 
 class Identifier extends Expression {
   constructor(private name: string) {
     super();
   }
-  toString() {
+  serialize() {
     return `"${this.name}"`;
   }
   clone() {
-    return this;
+    return new Identifier(this.name);
   }
 }
 
 class RawValue extends Expression {
-  constructor(private value: string) {
+  constructor(private value: string | number) {
     super();
   }
-  toString() {
+  serialize() {
     return `'${this.value}'`;
   }
   clone() {
-    return this;
+    return new RawValue(this.value);
   }
 }
 
@@ -68,18 +64,18 @@ class BinaryExpression extends Expression {
   ) {
     super();
   }
-  toString() {
+  serialize() {
     const op = {
       [Ops.eq]: "="
     }[this.op];
-    return `${this.lhs.toString()} ${op} ${this.rhs.toString()}`;
+    return `${this.lhs.serialize()} ${op} ${this.rhs.serialize()}`;
   }
   clone() {
     return new BinaryExpression(this.op, this.lhs.clone(), this.rhs.clone());
   }
 }
 
-class Builder {
+export class Builder {
   private _columns: Array<string> = [];
   private _conditions: Expression | null = null;
   private _table: string | null = null;
@@ -100,9 +96,9 @@ class Builder {
     clone._conditions = conditions;
     return clone;
   }
-  toString() {
+  serialize() {
     const where = this._conditions
-      ? ` WHERE ${this._conditions.toString()}`
+      ? ` WHERE ${this._conditions.serialize()}`
       : "";
 
     return `SELECT ${serializeColumns(this._columns)} FROM "${
