@@ -1,0 +1,25 @@
+{
+  "name": "query-builder",
+  "version": "0.0.1",
+  "description": "A SQL Query builder optimized for backend applications",
+  "main": "src/index.js",
+  "author": "Nathan Lincoln",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@types/jest": "^22.1.2",
+    "babel-core": "^6.26.0",
+    "babel-jest": "^22.2.2",
+    "babel-preset-env": "^1.6.1",
+    "jest": "^22.2.2",
+    "ts-jest": "^22.0.4",
+    "typescript": "^2.7.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+  }
+}
