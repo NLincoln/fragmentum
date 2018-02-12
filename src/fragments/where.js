@@ -5,7 +5,7 @@ export default class WhereFragment extends Fragment {
     this.expr = expr;
   }
   serialize() {
-    return this.expr.serialize();
+    return this.expr && this.expr.serialize();
   }
 }
 export const where = expr => new WhereFragment(expr);
