@@ -144,15 +144,40 @@ describe("conditional fragments", () => {
       .concat(false, select("id")),
     `SELECT "users", "id" FROM "users";`
   );
+  testQuery(
+    "conditional parts of an expression",
+    builder(select(), from("users"), where(false)),
+    `SELECT * FROM "users";`
+  );
 });
-
+describe("Serializing just fragments", () => {
+  testQuery(
+    "omitting the select portion",
+    builder(from("users")),
+    `FROM "users"`
+  );
+  testQuery("omitting the from portion", builder(select()), "SELECT *");
+  test("select", () => {
+    expect(select().serialize()).toEqual("*");
+  });
+  test("from", () => {
+    expect(from("users").serialize()).toEqual(`"users"`);
+  });
+  test("where", () => {
+    expect(where(eq("username", value(2))).serialize().query).toEqual(
+      `"username" = '2'`
+    );
+  });
+});
 describe.skip("subqueries", () => {
   describe.skip("From <subquery>");
   describe.skip("select <subquery>");
   describe.skip("subquery in expression");
 });
 describe.skip("custom SQL functions");
-describe.skip("from");
+describe("from", () => {
+  test("cartesian product");
+});
 describe.skip("join");
 describe.skip("where");
 describe.skip("having");

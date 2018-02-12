@@ -33,15 +33,28 @@ class Builder {
   concat(...fragments) {
     return new Builder(this.fragments.concat(...fragments));
   }
+  serializeFragment(klass, joinStr) {
+    return this.fragments
+      .filter(fragment => fragment instanceof klass)
+      .map(fragment => fragment.serialize())
+      .join(joinStr);
+  }
 
-  serialize() {
-    const serializeFragment = (klass, joinStr) =>
-      this.fragments
-        .filter(fragment => fragment instanceof klass)
-        .map(fragment => fragment.serialize())
-        .join(joinStr);
-    const columns = serializeFragment(SelectFragment, ", ");
-    const tables = serializeFragment(FromFragment, ", ");
+  serializeColumns() {
+    const serialized = this.serializeFragment(SelectFragment, ", ");
+    if (serialized) {
+      return `SELECT ${serialized}`;
+    }
+    return "";
+  }
+  serializeTables() {
+    const tables = this.serializeFragment(FromFragment, ", ");
+    if (tables) {
+      return `FROM ${tables}`;
+    }
+    return "";
+  }
+  serializeConditions() {
     let conditions = this.fragments
       .filter(fragment => fragment instanceof WhereFragment)
       .map(fragment => fragment.serialize());
@@ -50,10 +63,29 @@ class Builder {
       .reduce((prev, curr) => prev.concat(curr), []);
     let conditionsQuery = conditions.map(({ query }) => query).join(" AND ");
     if (conditionsQuery) {
-      conditionsQuery = ` WHERE ${conditionsQuery}`;
+      return {
+        conditions: `WHERE ${conditionsQuery}`,
+        binds
+      };
     }
     return {
-      query: `SELECT ${columns} FROM ${tables}${conditionsQuery};`,
+      conditions: "",
+      binds: []
+    };
+  }
+
+  serialize(opts = {}) {
+    let partial = Boolean(opts.partial);
+    const columns = this.serializeColumns();
+    const tables = this.serializeTables();
+    const { conditions, binds } = this.serializeConditions();
+    if (!columns || !tables) {
+      partial = true;
+    }
+    let fragments = [columns, tables, conditions].filter(f => f);
+    let semi = partial ? "" : ";";
+    return {
+      query: `${fragments.join(" ")}${semi}`,
       binds
     };
   }
