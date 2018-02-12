@@ -18,11 +18,10 @@ export default class BinaryExpression extends Expression {
     }[this.op];
     const serializeExpr = expr => {
       const serialized = expr.serialize();
-      if (typeof serialized === "string") {
-        return { query: serialized, binds: [] };
-      } else if ("binds" in serialized) {
+      if (typeof serialized === "object" && "binds" in serialized) {
         return serialized;
       }
+      return { query: serialized, binds: [] };
     };
     const lhs = serializeExpr(this.lhs);
     const rhs = serializeExpr(this.rhs);
