@@ -15,6 +15,15 @@ const builderFunc = fn =>
 
 class Builder {
   constructor(fragments) {
+    fragments = fragments
+      .map(fragment => {
+        if (fragment instanceof Builder) {
+          return fragment.fragments;
+        } else {
+          return fragment;
+        }
+      })
+      .reduce((prev, curr) => prev.concat(curr), []);
     this.fragments = fragments;
     this.select = builderFunc(select);
     this.where = builderFunc(where);

@@ -2,10 +2,21 @@ import { select, from, where, eq, value, builder, bind } from "./builder";
 
 const testQuery = (name, query, expected) =>
   test(name, () => {
-    expect(query.serialize().query).toEqual(expected);
+    const sql = query.serialize();
+
+    if (!expected) {
+      expect(sql).toMatchSnapshot();
+    } else {
+      expect(sql.query).toEqual(expected);
+    }
   });
 
 describe("builder", () => {
+  testQuery(
+    "concat-ing from another builder",
+    builder(builder().select(), builder().from("users")),
+    `SELECT * FROM "users";`
+  );
   test("list of fragments", () => {
     const sql = builder(select("user"), from("users")).serialize();
     expect(sql).toMatchSnapshot();
