@@ -6,20 +6,17 @@
   "author": "Nathan Lincoln",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "test": "jest --watch",
+    "build": "rollup -c",
+    "prepublish": "yarn build",
+    "test:ci": "jest --ci"
+  },
   "devDependencies": {
-    "@types/jest": "^22.1.2",
     "babel-core": "^6.26.0",
-    "babel-jest": "^22.2.2",
     "babel-preset-env": "^1.6.1",
     "jest": "^22.2.2",
-    "ts-jest": "^22.0.4",
-    "typescript": "^2.7.1"
+    "rollup": "^0.55.5"
   },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
-  }
+  "jest": {}
 }

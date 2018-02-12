@@ -1,11 +1,11 @@
-enum Ops {
-  eq
-}
+const Ops = {
+  eq: Symbol()
+};
 
-export const value = (value: string | number) => new RawValue(value);
+export const value = value => new RawValue(value);
 
-export const eq = (lhs: Expression | string, rhs: Expression | string) => {
-  const normalizeOperand = (operand: Expression | string): Expression => {
+export const eq = (lhs, rhs) => {
+  const normalizeOperand = operand => {
     if (operand instanceof Expression) {
       return operand;
     } else {
@@ -19,14 +19,12 @@ export const eq = (lhs: Expression | string, rhs: Expression | string) => {
   );
 };
 
-abstract class Expression {
-  abstract clone(): Expression;
-  abstract serialize(): string;
-}
+class Expression {}
 
 class Identifier extends Expression {
-  constructor(private name: string) {
+  constructor(name) {
     super();
+    this.name = name;
   }
   serialize() {
     return `"${this.name}"`;
@@ -37,8 +35,9 @@ class Identifier extends Expression {
 }
 
 class RawValue extends Expression {
-  constructor(private value: string | number) {
+  constructor(value) {
     super();
+    this.value = value;
   }
   serialize() {
     return `'${this.value}'`;
@@ -49,12 +48,11 @@ class RawValue extends Expression {
 }
 
 class BinaryExpression extends Expression {
-  constructor(
-    private op: Ops,
-    private lhs: Expression,
-    private rhs: Expression
-  ) {
+  constructor(op, lhs, rhs) {
     super();
+    this.op = op;
+    this.lhs = lhs;
+    this.rhs = rhs;
   }
   serialize() {
     const op = {
@@ -67,13 +65,12 @@ class BinaryExpression extends Expression {
   }
 }
 
-abstract class Fragment {
-  abstract serialize(): string;
-}
+class Fragment {}
 
 class SelectFragment extends Fragment {
-  constructor(private columns: Array<string>) {
+  constructor(columns) {
     super();
+    this.columns = columns;
   }
   serialize() {
     if (this.columns.length === 0) {
@@ -85,8 +82,9 @@ class SelectFragment extends Fragment {
 }
 
 class FromFragment extends Fragment {
-  constructor(private table: string) {
+  constructor(table) {
     super();
+    this.table = table;
   }
   serialize() {
     return `"${this.table}"`;
@@ -94,30 +92,32 @@ class FromFragment extends Fragment {
 }
 
 class WhereFragment extends Fragment {
-  constructor(private expr: Expression) {
+  constructor(expr) {
     super();
+    this.expr = expr;
   }
   serialize() {
     return this.expr.serialize();
   }
 }
 
-export const select = (...columns: Array<string>) =>
-  new SelectFragment(columns);
+export const select = (...columns) => new SelectFragment(columns);
 
-export const from = (table: string) => new FromFragment(table);
+export const from = table => new FromFragment(table);
 
-export const where = (expr: Expression) => new WhereFragment(expr);
+export const where = expr => new WhereFragment(expr);
 
 export class Builder {
-  constructor(private fragments: Array<Fragment> = []) {}
-  select(...columns: Array<string>) {
+  constructor(fragments) {
+    this.fragments = fragments;
+  }
+  select(...columns) {
     return new Builder(this.fragments.concat(select(...columns)));
   }
-  from(table: string) {
+  from(table) {
     return new Builder(this.fragments.concat(from(table)));
   }
-  serialize(): string {
+  serialize() {
     const columnFragments = this.fragments.filter(
       fragment => fragment instanceof SelectFragment
     );
@@ -128,10 +128,8 @@ export class Builder {
       fragment => fragment instanceof WhereFragment
     );
 
-    const serializeFragments = (
-      fragments: Array<Fragment>,
-      joinStr: string
-    ): string => fragments.map(fragment => fragment.serialize()).join(joinStr);
+    const serializeFragments = (fragments, joinStr) =>
+      fragments.map(fragment => fragment.serialize()).join(joinStr);
 
     const columns = serializeFragments(columnFragments, ", ");
     const tables = serializeFragments(tableFragments, ", ");

@@ -1,6 +1,6 @@
 import { select, from, where, eq, value, Builder } from "./builder";
 
-const testQuery = (name: string, query: Builder, expected: string) =>
+const testQuery = (name, query, expected) =>
   test(name, () => {
     expect(query.serialize()).toEqual(expected);
   });
