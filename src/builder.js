@@ -1,142 +1,54 @@
-const Ops = {
-  eq: Symbol()
-};
+import Fragment from "./fragments/fragment";
+import SelectFragment, { select } from "./fragments/select";
+import FromFragment, { from } from "./fragments/from";
+import WhereFragment, { where } from "./fragments/where";
+import quote from "./util/quote";
+import BinaryExpression, { Ops, eq } from "./expressions/binary-expression";
+import { value } from "./expressions/raw-value";
+import { bind } from "./expressions/bind";
 
-export const value = value => new RawValue(value);
+export { eq, value, select, from, where, bind };
 
-export const eq = (lhs, rhs) => {
-  const normalizeOperand = operand => {
-    if (operand instanceof Expression) {
-      return operand;
-    } else {
-      return new Identifier(operand);
-    }
+const builderFunc = fn =>
+  function(...args) {
+    return this.concat(fn(...args));
   };
-  return new BinaryExpression(
-    Ops.eq,
-    normalizeOperand(lhs),
-    normalizeOperand(rhs)
-  );
-};
 
-class Expression {}
-
-class Identifier extends Expression {
-  constructor(name) {
-    super();
-    this.name = name;
-  }
-  serialize() {
-    return `"${this.name}"`;
-  }
-  clone() {
-    return new Identifier(this.name);
-  }
-}
-
-class RawValue extends Expression {
-  constructor(value) {
-    super();
-    this.value = value;
-  }
-  serialize() {
-    return `'${this.value}'`;
-  }
-  clone() {
-    return new RawValue(this.value);
-  }
-}
-
-class BinaryExpression extends Expression {
-  constructor(op, lhs, rhs) {
-    super();
-    this.op = op;
-    this.lhs = lhs;
-    this.rhs = rhs;
-  }
-  serialize() {
-    const op = {
-      [Ops.eq]: "="
-    }[this.op];
-    return `${this.lhs.serialize()} ${op} ${this.rhs.serialize()}`;
-  }
-  clone() {
-    return new BinaryExpression(this.op, this.lhs.clone(), this.rhs.clone());
-  }
-}
-
-class Fragment {}
-
-class SelectFragment extends Fragment {
-  constructor(columns) {
-    super();
-    this.columns = columns;
-  }
-  serialize() {
-    if (this.columns.length === 0) {
-      return "*";
-    } else {
-      return this.columns.map(column => `"${column}"`).join(", ");
-    }
-  }
-}
-
-class FromFragment extends Fragment {
-  constructor(table) {
-    super();
-    this.table = table;
-  }
-  serialize() {
-    return `"${this.table}"`;
-  }
-}
-
-class WhereFragment extends Fragment {
-  constructor(expr) {
-    super();
-    this.expr = expr;
-  }
-  serialize() {
-    return this.expr.serialize();
-  }
-}
-
-export const select = (...columns) => new SelectFragment(columns);
-
-export const from = table => new FromFragment(table);
-
-export const where = expr => new WhereFragment(expr);
-
-export class Builder {
+class Builder {
   constructor(fragments) {
     this.fragments = fragments;
+    this.select = builderFunc(select);
+    this.where = builderFunc(where);
+    this.from = builderFunc(from);
   }
-  select(...columns) {
-    return new Builder(this.fragments.concat(select(...columns)));
+
+  concat(...fragments) {
+    return new Builder(this.fragments.concat(...fragments));
   }
-  from(table) {
-    return new Builder(this.fragments.concat(from(table)));
-  }
+
   serialize() {
-    const columnFragments = this.fragments.filter(
-      fragment => fragment instanceof SelectFragment
-    );
-    const tableFragments = this.fragments.filter(
-      fragment => fragment instanceof FromFragment
-    );
-    const conditionFragments = this.fragments.filter(
-      fragment => fragment instanceof WhereFragment
-    );
-
-    const serializeFragments = (fragments, joinStr) =>
-      fragments.map(fragment => fragment.serialize()).join(joinStr);
-
-    const columns = serializeFragments(columnFragments, ", ");
-    const tables = serializeFragments(tableFragments, ", ");
-    let conditions = serializeFragments(conditionFragments, " AND ");
-    if (conditions) {
-      conditions = ` WHERE ${conditions}`;
+    const serializeFragment = (klass, joinStr) =>
+      this.fragments
+        .filter(fragment => fragment instanceof klass)
+        .map(fragment => fragment.serialize())
+        .join(joinStr);
+    const columns = serializeFragment(SelectFragment, ", ");
+    const tables = serializeFragment(FromFragment, ", ");
+    let conditions = this.fragments
+      .filter(fragment => fragment instanceof WhereFragment)
+      .map(fragment => fragment.serialize());
+    let binds = conditions
+      .map(({ binds }) => binds)
+      .reduce((prev, curr) => prev.concat(curr), []);
+    let conditionsQuery = conditions.map(({ query }) => query).join(" AND ");
+    if (conditionsQuery) {
+      conditionsQuery = ` WHERE ${conditionsQuery}`;
     }
-    return `SELECT ${columns} FROM ${tables}${conditions};`;
+    return {
+      query: `SELECT ${columns} FROM ${tables}${conditionsQuery};`,
+      binds
+    };
   }
 }
+
+export const builder = (...fragments) => new Builder(fragments);

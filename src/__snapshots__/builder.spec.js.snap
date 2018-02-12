@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builder a healthy mix 1`] = `
+Object {
+  "binds": Array [],
+  "query": "SELECT * FROM \\"users\\";",
+}
+`;
+
+exports[`builder list of fragments 1`] = `
+Object {
+  "binds": Array [],
+  "query": "SELECT \\"user\\" FROM \\"users\\";",
+}
+`;
+
+exports[`builder method chaining 1`] = `
+Object {
+  "binds": Array [],
+  "query": "SELECT \\"user\\" FROM \\"users\\";",
+}
+`;
+
+exports[`variable binds can bind variables 1`] = `
+Object {
+  "binds": Array [
+    Object {
+      "user_id": 3,
+    },
+  ],
+  "query": "SELECT * FROM \\"users\\" WHERE \\"id\\" = :user_id;",
+}
+`;

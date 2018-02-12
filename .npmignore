@@ -3,3 +3,4 @@
 .travis.yml
 rollup.config.js
 **/*.spec.js
+coverage

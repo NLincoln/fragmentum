@@ -9,7 +9,7 @@
     "node": ">= 8.x"
   },
   "scripts": {
-    "test": "jest --watch",
+    "test": "jest --watch --coverage",
     "build": "rollup -c",
     "prepublish": "yarn build",
     "test:ci": "jest --ci"
