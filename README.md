@@ -1,4 +1,4 @@
-# Fragmentum
+# Fragmentum [![Build Status](https://travis-ci.org/NLincoln/fragmentum.svg?branch=master)](https://travis-ci.org/NLincoln/fragmentum)
 >  A Query Builder for dynamic PostgreSQL queries (MySQL support planned too)
 
 > :warning: Do not use this in production.
