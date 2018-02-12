@@ -1,4 +1,3 @@
-import Fragment from "./fragments/fragment";
 import SelectFragment, { select } from "./fragments/select";
 import FromFragment, { from } from "./fragments/from";
 import WhereFragment, { where } from "./fragments/where";
