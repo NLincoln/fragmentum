@@ -2,14 +2,6 @@ enum Ops {
   eq
 }
 
-const serializeColumns = (columns: Array<string>) => {
-  if (columns.length === 0) {
-    return "*";
-  } else {
-    return columns.map(column => `"${column}"`).join(", ");
-  }
-};
-
 export const value = (value: string | number) => new RawValue(value);
 
 export const eq = (lhs: Expression | string, rhs: Expression | string) => {
@@ -75,46 +67,78 @@ class BinaryExpression extends Expression {
   }
 }
 
-export class Builder {
-  private _columns: Array<string> = [];
-  private _conditions: Expression | null = null;
-  private _table: string | null = null;
-  constructor() {}
-  columns(columns: Array<string>) {
-    const clone = this.clone();
-    clone._columns = this._columns.concat(columns);
-    return clone;
-  }
-  from(table: string) {
-    const clone = this.clone();
-    clone._table = table;
-    return clone;
-  }
-  where(conditions: Expression) {
-    const clone = this.clone();
+abstract class Fragment {
+  abstract serialize(): string;
+}
 
-    clone._conditions = conditions;
-    return clone;
+class SelectFragment extends Fragment {
+  constructor(private columns: Array<string>) {
+    super();
   }
   serialize() {
-    const where = this._conditions
-      ? ` WHERE ${this._conditions.serialize()}`
-      : "";
-
-    return `SELECT ${serializeColumns(this._columns)} FROM "${
-      this._table
-    }"${where};`;
-  }
-  clone() {
-    const builder = new Builder();
-    builder._columns = Array.from(this._columns);
-    builder._conditions = this._conditions && this._conditions.clone();
-    builder._table = this._table;
-    return builder;
+    if (this.columns.length === 0) {
+      return "*";
+    } else {
+      return this.columns.map(column => `"${column}"`).join(", ");
+    }
   }
 }
 
-export const select = (...columns: Array<string>) => {
-  const builder = new Builder();
-  return builder.columns(columns);
-};
+class FromFragment extends Fragment {
+  constructor(private table: string) {
+    super();
+  }
+  serialize() {
+    return `"${this.table}"`;
+  }
+}
+
+class WhereFragment extends Fragment {
+  constructor(private expr: Expression) {
+    super();
+  }
+  serialize() {
+    return this.expr.serialize();
+  }
+}
+
+export const select = (...columns: Array<string>) =>
+  new SelectFragment(columns);
+
+export const from = (table: string) => new FromFragment(table);
+
+export const where = (expr: Expression) => new WhereFragment(expr);
+
+export class Builder {
+  constructor(private fragments: Array<Fragment> = []) {}
+  select(...columns: Array<string>) {
+    return new Builder(this.fragments.concat(select(...columns)));
+  }
+  from(table: string) {
+    return new Builder(this.fragments.concat(from(table)));
+  }
+  serialize(): string {
+    const columnFragments = this.fragments.filter(
+      fragment => fragment instanceof SelectFragment
+    );
+    const tableFragments = this.fragments.filter(
+      fragment => fragment instanceof FromFragment
+    );
+    const conditionFragments = this.fragments.filter(
+      fragment => fragment instanceof WhereFragment
+    );
+
+    const serializeFragments = (
+      fragments: Array<Fragment>,
+      joinStr: string
+    ): string => fragments.map(fragment => fragment.serialize()).join(joinStr);
+
+    const columns = serializeFragments(columnFragments, ", ");
+    const tables = serializeFragments(tableFragments, ", ");
+    let conditions = serializeFragments(conditionFragments, " AND ");
+    if (conditions) {
+      conditions = ` WHERE ${conditions}`;
+    }
+    return `SELECT ${columns} FROM ${tables}${conditions};`;
+  }
+}
