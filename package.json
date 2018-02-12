@@ -2,7 +2,7 @@
   "name": "fragmentum",
   "version": "0.0.1",
   "description": "A SQL Query builder optimized for backend applications",
-  "main": "src/index.js",
+  "main": "dist/bundle.js",
   "author": "Nathan Lincoln",
   "license": "MIT",
   "private": true,
