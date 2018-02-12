@@ -4,6 +4,7 @@
   "description": "A SQL Query builder optimized for backend applications",
   "main": "dist/bundle.js",
   "author": "Nathan Lincoln <nlincoln@intellifarms.com>",
+  "repository": "NLincoln/fragmentum",
   "license": "MIT",
   "engines": {
     "node": ">= 8.x"
