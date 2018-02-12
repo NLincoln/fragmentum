@@ -8,7 +8,11 @@ export default class Bind extends Expression {
   }
   serialize() {
     return {
-      binds: [{ [this.name]: this.value }],
+      binds: [
+        {
+          [this.name]: this.value
+        }
+      ],
       query: `:${this.name}`
     };
   }
