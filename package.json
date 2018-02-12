@@ -5,7 +5,6 @@
   "main": "dist/bundle.js",
   "author": "Nathan Lincoln",
   "license": "MIT",
-  "private": true,
   "scripts": {
     "test": "jest --watch",
     "build": "rollup -c",
