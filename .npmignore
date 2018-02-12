@@ -4,3 +4,4 @@
 rollup.config.js
 **/*.spec.js
 coverage
+**/__snapshots__
