@@ -3,8 +3,11 @@
   "version": "0.0.1",
   "description": "A SQL Query builder optimized for backend applications",
   "main": "dist/bundle.js",
-  "author": "Nathan Lincoln",
+  "author": "Nathan Lincoln <nlincoln@intellifarms.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">= 8.x"
+  },
   "scripts": {
     "test": "jest --watch",
     "build": "rollup -c",
