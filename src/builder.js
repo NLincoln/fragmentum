@@ -8,11 +8,6 @@ import { bind } from "./expressions/bind";
 
 export { eq, value, select, from, where, bind };
 
-const builderFunc = fn =>
-  function(...args) {
-    return this.concat(fn(...args));
-  };
-
 class Builder {
   constructor(fragments) {
     fragments = fragments
@@ -25,9 +20,6 @@ class Builder {
       })
       .reduce((prev, curr) => prev.concat(curr), []);
     this.fragments = fragments;
-    this.select = builderFunc(select);
-    this.where = builderFunc(where);
-    this.from = builderFunc(from);
   }
 
   concat(...fragments) {
@@ -90,5 +82,13 @@ class Builder {
     };
   }
 }
+const builderFunc = fn =>
+  function(...args) {
+    return this.concat(fn(...args));
+  };
+
+Builder.prototype.select = builderFunc(select);
+Builder.prototype.where = builderFunc(where);
+Builder.prototype.from = builderFunc(from);
 
 export const builder = (...fragments) => new Builder(fragments);
