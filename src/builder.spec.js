@@ -2,10 +2,14 @@ import { select, from, where, eq, value, builder, bind } from "./builder";
 
 const testQuery = (name, query, expected) =>
   test(name, () => {
+    if (typeof query === "function") {
+      query = query();
+    }
     const sql = query.serialize();
-
     if (!expected) {
       expect(sql).toMatchSnapshot();
+    } else if (typeof expected === "object") {
+      expect(sql).toEqual(expected);
     } else {
       expect(sql.query).toEqual(expected);
     }
@@ -58,18 +62,22 @@ describe("select statements", () => {
     testQuery(
       "conditional array",
       builder()
+        .select("user_id")
         .select(["username", false])
         .from("users"),
-      `SELECT "username" FROM "users";`
+      `SELECT "user_id" FROM "users";`
     );
     testQuery(
       "conditional object",
-      builder()
-        .select({
-          username: false
-        })
-        .from("users"),
-      `SELECT "username" FROM "users";`
+      () => {
+        return builder()
+          .select("user_id")
+          .select({
+            username: false
+          })
+          .from("users");
+      },
+      `SELECT "user_id" FROM "users";`
     );
   });
   testQuery(
@@ -160,23 +168,103 @@ describe("Serializing just fragments", () => {
   test("select", () => {
     expect(select().serialize()).toEqual("*");
   });
-  test("from", () => {
-    expect(from("users").serialize()).toEqual(`"users"`);
-  });
+  testQuery("from", from("users"), `"users"`);
   test("where", () => {
     expect(where(eq("username", value(2))).serialize().query).toEqual(
       `"username" = '2'`
     );
   });
 });
-describe.skip("subqueries", () => {
-  describe.skip("From <subquery>");
+
+testQuery(
+  "table.column syntax",
+  builder().select(
+    "user.username",
+    "groups.groupname",
+    "user.id",
+    ["user.first_name", "first"],
+    {
+      "user.last_name": "last"
+    }
+  ),
+  `SELECT "user"."username", "groups"."groupname", "user"."id", "user"."first_name" AS "first", "user"."last_name" AS "last"`
+);
+
+describe("subqueries", () => {
+  describe("From <subquery>", () => {
+    testQuery(
+      "from a builder",
+      builder().from(
+        builder("alias")
+          .select()
+          .from("users")
+      ),
+      `FROM (SELECT * FROM "users") AS "alias"`
+    );
+    testQuery(
+      "a garden mix of everything because I'm evil",
+      builder(
+        from(
+          from(
+            "user",
+            builder("alias")
+              .select()
+              .from("users")
+          )
+        ),
+        from(
+          builder("alias2", where(eq("user.user_id", bind("userid", 2))))
+            .select()
+            .from("groups")
+        )
+      ),
+      {
+        query: `FROM (SELECT * FROM "users") AS "alias", "user", (SELECT * FROM "groups" WHERE "user"."user_id" = :userid) AS "alias2"`,
+        binds: [
+          {
+            userid: 2
+          }
+        ]
+      }
+    );
+
+    testQuery(
+      "from an incomplete fragment",
+      builder(from(builder("alias", select()))),
+      `FROM (SELECT *) AS "alias"`
+    );
+
+    testQuery(
+      "from another from fragment",
+      builder()
+        .select("alias.user_id")
+        .from(
+          from(
+            builder("alias", select())
+              .from("users")
+              .from("groups")
+          )
+        ),
+      `SELECT "alias"."user_id" FROM (SELECT * FROM "users", "groups") AS "alias";`
+    );
+  });
   describe.skip("select <subquery>");
   describe.skip("subquery in expression");
 });
 describe.skip("custom SQL functions");
 describe("from", () => {
-  test("cartesian product");
+  testQuery(
+    "cartesian product, one from",
+    builder().from("users", "groups"),
+    'FROM "users", "groups"'
+  );
+  testQuery(
+    "cartesian product, two from's",
+    builder()
+      .from("users")
+      .from("groups"),
+    'FROM "users", "groups"'
+  );
 });
 describe.skip("join");
 describe.skip("where");

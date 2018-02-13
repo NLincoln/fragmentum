@@ -1,5 +1,5 @@
 import SelectFragment, { select } from "./fragments/select";
-import FromFragment, { from } from "./fragments/from";
+import FromFragment, { from, concatSubQueries } from "./fragments/from";
 import WhereFragment, { where } from "./fragments/where";
 import quote from "./util/quote";
 import BinaryExpression, { Ops, eq } from "./expressions/binary-expression";
@@ -8,8 +8,15 @@ import { bind } from "./expressions/bind";
 
 export { eq, value, select, from, where, bind };
 
-class Builder {
+export class Builder {
   constructor(fragments) {
+    // The first argument of our fragments array may be an alias.
+    if (typeof fragments[0] === "string") {
+      this.alias = fragments[0];
+      fragments = fragments.slice(1);
+    } else {
+      this.alias = null;
+    }
     fragments = fragments
       .map(fragment => {
         if (fragment instanceof Builder) {
@@ -23,28 +30,34 @@ class Builder {
   }
 
   concat(...fragments) {
-    return new Builder(this.fragments.concat(...fragments));
+    let nextFragments = this.fragments.concat(...fragments);
+    if (this.alias) {
+      nextFragments.unshift(this.alias);
+    }
+    return new Builder(nextFragments);
   }
-  serializeFragment(klass, joinStr) {
+  serializeFragment(klass) {
     return this.fragments
       .filter(fragment => fragment instanceof klass)
       .map(fragment => fragment.serialize())
-      .join(joinStr);
+      .filter(f => (typeof f === "object" && f.query) || f);
   }
 
   serializeColumns() {
-    const serialized = this.serializeFragment(SelectFragment, ", ");
+    const serialized = this.serializeFragment(SelectFragment).join(", ");
     if (serialized) {
       return `SELECT ${serialized}`;
     }
     return "";
   }
   serializeTables() {
-    const tables = this.serializeFragment(FromFragment, ", ");
-    if (tables) {
-      return `FROM ${tables}`;
+    let { query, binds } = concatSubQueries(
+      this.serializeFragment(FromFragment)
+    );
+    if (query) {
+      query = `FROM ${query}`;
     }
-    return "";
+    return { query, binds };
   }
   serializeConditions() {
     let conditions = this.fragments
@@ -56,12 +69,12 @@ class Builder {
     let conditionsQuery = conditions.map(({ query }) => query).join(" AND ");
     if (conditionsQuery) {
       return {
-        conditions: `WHERE ${conditionsQuery}`,
+        query: `WHERE ${conditionsQuery}`,
         binds
       };
     }
     return {
-      conditions: "",
+      query: "",
       binds: []
     };
   }
@@ -70,15 +83,15 @@ class Builder {
     let partial = Boolean(opts.partial);
     const columns = this.serializeColumns();
     const tables = this.serializeTables();
-    const { conditions, binds } = this.serializeConditions();
-    if (!columns || !tables) {
+    const conditions = this.serializeConditions();
+    if (!columns || !tables.query) {
       partial = true;
     }
-    let fragments = [columns, tables, conditions].filter(f => f);
+    let fragments = [columns, tables.query, conditions.query].filter(f => f);
     let semi = partial ? "" : ";";
     return {
       query: `${fragments.join(" ")}${semi}`,
-      binds
+      binds: conditions.binds.concat(tables.binds)
     };
   }
 }

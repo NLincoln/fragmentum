@@ -1,5 +1,5 @@
 import Expression from "./expression";
-import quote from "../util/quote";
+import columnQuote from "../util/column";
 
 export default class Identifier extends Expression {
   constructor(name) {
@@ -7,6 +7,6 @@ export default class Identifier extends Expression {
     this.name = name;
   }
   serialize() {
-    return quote(this.name);
+    return columnQuote(this.name);
   }
 }

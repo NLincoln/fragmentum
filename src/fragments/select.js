@@ -1,5 +1,13 @@
 import Fragment from "./fragment";
 import quote from "../util/quote";
+import columnQuote from "../util/column";
+
+const serializePair = ([key, alias]) => {
+  if (key && alias) {
+    return `${columnQuote(key)} AS ${quote(alias)}`;
+  }
+  return null;
+};
 
 export default class SelectFragment extends Fragment {
   constructor(columns) {
@@ -12,19 +20,15 @@ export default class SelectFragment extends Fragment {
     }
     return this.columns
       .map(column => {
-        const serializeArray = ([key, alias]) => {
-          if (key && alias) {
-            return `${quote(key)} AS ${quote(alias)}`;
-          }
-          return quote(key);
-        };
         if (Array.isArray(column)) {
-          return serializeArray(column);
+          return serializePair(column);
         } else if (typeof column === "object") {
-          return Object.entries(column).map(serializeArray);
+          return Object.entries(column).map(serializePair);
         }
-        return quote(column);
+        return columnQuote(column);
       })
+      .reduce((prev, curr) => prev.concat(curr), [])
+      .filter(f => f)
       .join(", ");
   }
 }
