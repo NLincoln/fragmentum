@@ -69,14 +69,12 @@ describe("select statements", () => {
     );
     testQuery(
       "conditional object",
-      () => {
-        return builder()
-          .select("user_id")
-          .select({
-            username: false
-          })
-          .from("users");
-      },
+      builder()
+        .select("user_id")
+        .select({
+          username: false
+        })
+        .from("users"),
       `SELECT "user_id" FROM "users";`
     );
   });
@@ -127,8 +125,6 @@ describe("select statements", () => {
     `SELECT "id", "username" FROM "users" WHERE "id" = '2';`
   );
 });
-// Make sure nothing is accidentally mutated
-describe.skip("immutability");
 
 describe("variable binds", () => {
   test("can bind variables", () => {
@@ -141,7 +137,7 @@ describe("variable binds", () => {
     expect(sql).toHaveProperty("query");
     expect(sql).toMatchSnapshot();
   });
-  test.skip("value() will return a bound var with an anonymous key", () => {});
+  test("value() will return a bound var with an anonymous key");
 });
 
 describe("conditional fragments", () => {
@@ -271,6 +267,10 @@ describe("subqueries", () => {
     );
   });
 });
+
+// Make sure nothing is accidentally mutated
+describe.skip("immutability");
+
 describe.skip("custom SQL functions");
 describe("from", () => {
   testQuery(
@@ -285,6 +285,20 @@ describe("from", () => {
       .from("groups"),
     'FROM "users", "groups"'
   );
+});
+describe("binary expressions", () => {
+  test("eq");
+  test("gt");
+  test("lt");
+  test("in");
+  test("like");
+  describe("not", () => {
+    test("eq");
+    test("gt");
+    test("lt");
+    test("in");
+    test("like");
+  });
 });
 describe.skip("join");
 describe.skip("where");
