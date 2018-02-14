@@ -1,12 +1,56 @@
 import Fragment from "./fragment";
+import quote from "../util/quote";
+import wrap from "../util/wrap";
+import { Builder } from "../builder";
+
+export const concatSubQueries = arr => {
+  const reduced = arr.reduce(
+    (prev, curr) => ({
+      query: prev.query.concat(curr.query),
+      binds: prev.binds.concat(curr.binds)
+    }),
+    {
+      query: [],
+      binds: []
+    }
+  );
+  return {
+    query: reduced.query.filter(f => f).join(", "),
+    binds: reduced.binds
+  };
+};
 
 export default class FromFragment extends Fragment {
-  constructor(table) {
+  constructor(...tables) {
     super();
-    this.table = table;
+    this.tables = tables;
   }
   serialize() {
-    return `"${this.table}"`;
+    const subqueries = concatSubQueries(
+      this.tables
+        .filter(table => table instanceof Builder)
+        .map(builder => {
+          let { query, binds } = builder.serialize({ partial: true });
+          return {
+            query: `(${query}) AS ${quote(builder.alias)}`,
+            binds
+          };
+        })
+        .concat(
+          this.tables
+            .filter(table => table instanceof FromFragment)
+            .map(fragment => fragment.serialize())
+        )
+    );
+
+    const strings = this.tables
+      .filter(table => typeof table === "string")
+      .map(quote);
+    return {
+      query: [subqueries.query, ...strings].filter(f => f).join(", "),
+      binds: subqueries.binds
+    };
   }
 }
-export const from = table => new FromFragment(table);
+
+export const from = wrap(FromFragment);

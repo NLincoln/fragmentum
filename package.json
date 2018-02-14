@@ -7,19 +7,51 @@
   "repository": "NLincoln/fragmentum",
   "license": "MIT",
   "engines": {
-    "node": ">= 8.x"
+    "node": ">= 6.x"
   },
   "scripts": {
     "test": "jest --watch --coverage",
-    "build": "rollup -c",
+    "build": "BABEL_ENV=build rollup -c",
     "prepublish": "yarn build",
     "test:ci": "jest --ci"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "jest": "^22.2.2",
-    "rollup": "^0.55.5"
+    "rollup": "^0.55.5",
+    "rollup-plugin-babel": "^3.0.3"
   },
-  "jest": {}
+  "jest": {},
+  "babel": {
+    "plugins": ["transform-object-rest-spread"],
+    "env": {
+      "build": {
+        "presets": [
+          [
+            "babel-preset-env",
+            {
+              "modules": false,
+              "targets": {
+                "node": "6"
+              }
+            }
+          ]
+        ]
+      },
+      "test": {
+        "presets": [
+          [
+            "babel-preset-env",
+            {
+              "targets": {
+                "node": "6"
+              }
+            }
+          ]
+        ]
+      }
+    }
+  }
 }
