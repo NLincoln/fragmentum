@@ -30,7 +30,6 @@ export default class SelectFragment extends Fragment {
         return columnQuote(column);
       })
       .reduce((prev, curr) => prev.concat(curr), [])
-      .filter(f => f)
       .join(", ");
   }
 }

@@ -15,7 +15,7 @@ export const concatSubQueries = (arr, joinStr = ", ") => {
     }
   );
   return {
-    query: reduced.query.filter(f => f).join(joinStr),
+    query: reduced.query.join(joinStr),
     binds: reduced.binds
   };
 };
