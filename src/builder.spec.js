@@ -258,12 +258,12 @@ describe("subqueries", () => {
                 "alias",
                 select("user_id"),
                 from("users"),
-                where(eq("group_id", value(2)))
+                where(eq("group_id", bind("user_id", 2)))
               )
             )
           )
         ),
-      `SELECT * FROM "users" WHERE "user_id" = (SELECT "user_id" FROM "users" WHERE "group_id" = '2');`
+      `SELECT * FROM "users" WHERE "user_id" = (SELECT "user_id" FROM "users" WHERE "group_id" = :user_id);`
     );
   });
 });
