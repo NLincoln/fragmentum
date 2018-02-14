@@ -1,4 +1,5 @@
 import Expression from "./expression";
+import wrap from "../util/wrap";
 
 export default class Bind extends Expression {
   constructor(name, value) {
@@ -17,4 +18,4 @@ export default class Bind extends Expression {
     };
   }
 }
-export const bind = (...args) => new Bind(...args);
+export const bind = wrap(Bind);

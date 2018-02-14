@@ -1,12 +1,6 @@
 import SelectFragment, { select } from "./fragments/select";
 import FromFragment, { from, concatSubQueries } from "./fragments/from";
 import WhereFragment, { where } from "./fragments/where";
-import quote from "./util/quote";
-import BinaryExpression, { Ops, eq } from "./expressions/binary-expression";
-import { value } from "./expressions/raw-value";
-import { bind } from "./expressions/bind";
-
-export { eq, value, select, from, where, bind };
 
 export class Builder {
   constructor(fragments) {

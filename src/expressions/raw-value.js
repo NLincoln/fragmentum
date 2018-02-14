@@ -1,5 +1,6 @@
 import Expression from "./expression";
 import quote from "../util/quote";
+import wrap from "../util/wrap";
 
 export default class RawValue extends Expression {
   constructor(value) {
@@ -10,4 +11,5 @@ export default class RawValue extends Expression {
     return quote(this.value, { single: true });
   }
 }
-export const value = value => new RawValue(value);
+
+export const value = wrap(RawValue);

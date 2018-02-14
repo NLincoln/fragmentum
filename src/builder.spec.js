@@ -1,4 +1,4 @@
-import { select, from, where, eq, value, builder, bind } from "./builder";
+import { select, from, where, eq, value, builder, bind } from "./index";
 
 const testQuery = (name, query, expected) =>
   test(name, () => {
