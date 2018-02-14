@@ -342,11 +342,11 @@ describe("join", () => {
         builder().join(
           "groups",
           "user.group_id",
-          builder()
+          builder(where(eq("user.id", bind("userid", 2))))
             .select()
             .from("users")
         ),
-      `INNER JOIN "groups" ON "user"."group_id" = (SELECT * FROM "users")`
+      `INNER JOIN "groups" ON "user"."group_id" = (SELECT * FROM "users" WHERE "user"."id" = :userid)`
     );
   });
 });
