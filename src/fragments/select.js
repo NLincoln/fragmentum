@@ -23,7 +23,9 @@ export default class SelectFragment extends Fragment {
         if (Array.isArray(column)) {
           return serializePair(column);
         } else if (typeof column === "object") {
-          return Object.entries(column).map(serializePair);
+          return Object.keys(column).map(key =>
+            serializePair([key, column[key]])
+          );
         }
         return columnQuote(column);
       })
