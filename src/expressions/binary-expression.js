@@ -1,8 +1,24 @@
 import Expression from "./expression";
 import Identifier from "./identifier";
+import { Builder } from "../builder";
+import FromFragment from "../fragments/from";
+import quote from "../util/quote";
 
 export const Ops = {
   eq: Symbol()
+};
+const serializeExpr = expr => {
+  const serialized = expr.serialize({ partial: true });
+  if (expr instanceof Builder || expr instanceof FromFragment) {
+    return {
+      ...serialized,
+      query: quote(serialized.query, { parens: true })
+    };
+  }
+  if (typeof serialized === "object" && "binds" in serialized) {
+    return serialized;
+  }
+  return { query: serialized, binds: [] };
 };
 
 export default class BinaryExpression extends Expression {
@@ -16,13 +32,6 @@ export default class BinaryExpression extends Expression {
     const op = {
       [Ops.eq]: "="
     }[this.op];
-    const serializeExpr = expr => {
-      const serialized = expr.serialize();
-      if (typeof serialized === "object" && "binds" in serialized) {
-        return serialized;
-      }
-      return { query: serialized, binds: [] };
-    };
     const lhs = serializeExpr(this.lhs);
     const rhs = serializeExpr(this.rhs);
     return {
@@ -31,14 +40,16 @@ export default class BinaryExpression extends Expression {
     };
   }
 }
+
+const normalizeOperand = operand => {
+  if (operand instanceof Expression || operand instanceof Builder) {
+    return operand;
+  } else {
+    return new Identifier(operand);
+  }
+};
+
 export const eq = (lhs, rhs) => {
-  const normalizeOperand = operand => {
-    if (operand instanceof Expression) {
-      return operand;
-    } else {
-      return new Identifier(operand);
-    }
-  };
   return new BinaryExpression(
     Ops.eq,
     normalizeOperand(lhs),

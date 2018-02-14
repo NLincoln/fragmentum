@@ -248,8 +248,28 @@ describe("subqueries", () => {
       `SELECT "alias"."user_id" FROM (SELECT * FROM "users", "groups") AS "alias";`
     );
   });
-  describe.skip("select <subquery>");
-  describe.skip("subquery in expression");
+  describe("subquery in expression", () => {
+    testQuery(
+      "subquery inside of expression: full test",
+      () =>
+        builder(
+          select(),
+          from("users"),
+          where(
+            eq(
+              "user_id",
+              builder(
+                "alias",
+                select("user_id"),
+                from("users"),
+                where(eq("group_id", value(2)))
+              )
+            )
+          )
+        ),
+      `SELECT * FROM "users" WHERE "user_id" = (SELECT "user_id" FROM "users" WHERE "group_id" = '2');`
+    );
+  });
 });
 describe.skip("custom SQL functions");
 describe("from", () => {

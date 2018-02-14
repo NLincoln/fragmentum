@@ -30,10 +30,7 @@ export default class FromFragment extends Fragment {
       this.tables
         .filter(table => table instanceof Builder)
         .map(builder => {
-          let { query, binds } = builder.serialize();
-          if (query.endsWith(";")) {
-            query = query.slice(0, -1);
-          }
+          let { query, binds } = builder.serialize({ partial: true });
           return {
             query: `(${query}) AS ${quote(builder.alias)}`,
             binds
