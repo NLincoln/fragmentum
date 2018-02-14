@@ -1,6 +1,7 @@
 import SelectFragment, { select } from "./fragments/select";
 import FromFragment, { from, concatSubQueries } from "./fragments/from";
 import WhereFragment, { where } from "./fragments/where";
+import JoinFragment, { join } from "./fragments/join";
 
 export class Builder {
   constructor(fragments) {
@@ -73,19 +74,29 @@ export class Builder {
     };
   }
 
+  serializeJoins() {
+    return concatSubQueries(this.serializeFragment(JoinFragment), " ");
+  }
+
   serialize(opts = {}) {
     let partial = Boolean(opts.partial);
     const columns = this.serializeColumns();
     const tables = this.serializeTables();
     const conditions = this.serializeConditions();
+    const joins = this.serializeJoins();
     if (!columns || !tables.query) {
       partial = true;
     }
-    let fragments = [columns, tables.query, conditions.query].filter(f => f);
+    let fragments = [
+      columns,
+      tables.query,
+      joins.query,
+      conditions.query
+    ].filter(f => f);
     let semi = partial ? "" : ";";
     return {
       query: `${fragments.join(" ")}${semi}`,
-      binds: conditions.binds.concat(tables.binds)
+      binds: [...conditions.binds, ...tables.binds, ...joins.binds]
     };
   }
 }
@@ -97,5 +108,6 @@ const builderFunc = fn =>
 Builder.prototype.select = builderFunc(select);
 Builder.prototype.where = builderFunc(where);
 Builder.prototype.from = builderFunc(from);
+Builder.prototype.join = builderFunc(join);
 
 export const builder = (...fragments) => new Builder(fragments);
