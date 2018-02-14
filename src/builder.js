@@ -96,7 +96,7 @@ export class Builder {
     let semi = partial ? "" : ";";
     return {
       query: `${fragments.join(" ")}${semi}`,
-      binds: conditions.binds.concat(tables.binds).concat(joins.binds)
+      binds: [...conditions.binds, ...tables.binds, ...joins.binds]
     };
   }
 }
