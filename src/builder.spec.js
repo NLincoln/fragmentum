@@ -1,4 +1,4 @@
-import { select, from, where, eq, value, builder, bind } from "./index";
+import { select, from, where, ops, value, builder, bind } from "./index";
 
 const testQuery = (name, query, expected) =>
   test(name, () => {
@@ -21,10 +21,7 @@ describe("builder", () => {
     builder(builder().select(), builder().from("users")),
     `SELECT * FROM "users";`
   );
-  test("list of fragments", () => {
-    const sql = builder(select("user"), from("users")).serialize();
-    expect(sql).toMatchSnapshot();
-  });
+  testQuery("list of fragments", builder(select("user"), from("users")));
   test("method chaining", () => {
     const sql = builder()
       .select("user")
@@ -106,8 +103,8 @@ describe("select statements", () => {
     builder()
       .select()
       .from("users")
-      .where(eq("user_id", value(1))),
-    `SELECT * FROM "users" WHERE "user_id" = '1';`
+      .where(ops.eq("user_id", value(1))),
+    `SELECT * FROM "users" WHERE ("user_id" = '1');`
   );
   testQuery(
     "with columns",
@@ -121,8 +118,8 @@ describe("select statements", () => {
     builder()
       .select("id", "username")
       .from("users")
-      .where(eq("id", value(2))),
-    `SELECT "id", "username" FROM "users" WHERE "id" = '2';`
+      .where(ops.eq("id", value(2))),
+    `SELECT "id", "username" FROM "users" WHERE ("id" = '2');`
   );
 });
 
@@ -131,7 +128,7 @@ describe("variable binds", () => {
     const sql = builder(
       select(),
       from("users"),
-      where(eq("id", bind("user_id", 3)))
+      where(ops.eq("id", bind("user_id", 3)))
     ).serialize();
     expect(sql).toHaveProperty("binds");
     expect(sql).toHaveProperty("query");
@@ -166,8 +163,8 @@ describe("Serializing just fragments", () => {
   });
   testQuery("from", from("users"), `"users"`);
   test("where", () => {
-    expect(where(eq("username", value(2))).serialize().query).toEqual(
-      `"username" = '2'`
+    expect(where(ops.eq("username", value(2))).serialize().query).toEqual(
+      `("username" = '2')`
     );
   });
 });
@@ -210,13 +207,13 @@ describe("subqueries", () => {
           )
         ),
         from(
-          builder("alias2", where(eq("user.user_id", bind("userid", 2))))
+          builder("alias2", where(ops.eq("user.user_id", bind("userid", 2))))
             .select()
             .from("groups")
         )
       ),
       {
-        query: `FROM "user", (SELECT * FROM "users") AS "alias", (SELECT * FROM "groups" WHERE "user"."user_id" = :userid) AS "alias2"`,
+        query: `FROM "user", (SELECT * FROM "users") AS "alias", (SELECT * FROM "groups" WHERE ("user"."user_id" = :userid)) AS "alias2"`,
         binds: [
           {
             userid: 2
@@ -253,18 +250,18 @@ describe("subqueries", () => {
           select(),
           from("users"),
           where(
-            eq(
+            ops.eq(
               "user_id",
               builder(
                 "alias",
                 select("user_id"),
                 from("users"),
-                where(eq("group_id", bind("user_id", 2)))
+                where(ops.eq("group_id", bind("user_id", 2)))
               )
             )
           )
         ),
-      `SELECT * FROM "users" WHERE "user_id" = (SELECT "user_id" FROM "users" WHERE "group_id" = :user_id);`
+      `SELECT * FROM "users" WHERE ("user_id" = (SELECT "user_id" FROM "users" WHERE ("group_id" = :user_id)));`
     );
   });
 });
@@ -288,18 +285,57 @@ describe("from", () => {
   );
 });
 describe("binary expressions", () => {
-  test("eq");
-  test("gt");
-  test("lt");
-  test("in");
+  const binaryOpTest = (func, expected) => {
+    describe(`Optests: ${expected}`, () => {
+      testQuery(
+        "simple string columns",
+        () => where(func("a", "b")),
+        `("a" ${expected} "b")`
+      );
+      testQuery("binds", () => where(func("a", bind("userid", 2))), {
+        query: `("a" ${expected} :userid)`,
+        binds: [
+          {
+            userid: 2
+          }
+        ]
+      });
+      testQuery(
+        "nesting",
+        () => where(func("a", func("b", "c"))),
+        `("a" ${expected} ("b" ${expected} "c"))`
+      );
+    });
+  };
+  binaryOpTest(ops.eq, "=");
+  binaryOpTest(ops.gt, ">");
+  binaryOpTest(ops.lt, "<");
+  binaryOpTest(ops.ne, "!=");
+  binaryOpTest(ops.gte, ">=");
+  binaryOpTest(ops.lte, "<=");
+  binaryOpTest(ops.bit.shiftLeft, "<<");
+  binaryOpTest(ops.bit.shiftRight, ">>");
+  const associativeOpsTest = (func, expected, name = expected) => {
+    binaryOpTest(func, expected);
+    describe(`Associative OpTests: ${name}`, () => {
+      testQuery(
+        "providing 3 values",
+        () => where(func("id", "di", "d3")),
+        `("id" ${expected} "di" ${expected} "d3")`
+      );
+      testQuery("Providing one value", () => where(func("id")), `("id")`);
+    });
+  };
+  associativeOpsTest(ops.add, "+");
+  associativeOpsTest(ops.sub, "-");
+  associativeOpsTest(ops.div, "/");
+  associativeOpsTest(ops.mult, "*");
+  associativeOpsTest(ops.bit.and, "&");
+  associativeOpsTest(ops.bit.or, "|");
+  associativeOpsTest(ops.bit.xor, "#");
+  test("NOT !");
   test("like");
-  describe("not", () => {
-    test("eq");
-    test("gt");
-    test("lt");
-    test("in");
-    test("like");
-  });
+  test("in");
 });
 describe("join", () => {
   describe("inner joins", () => {
@@ -309,12 +345,12 @@ describe("join", () => {
         builder()
           .from("users")
           .join("groups", "user.group_id", "group.user_id"),
-      `FROM "users" INNER JOIN "groups" ON "user"."group_id" = "group"."user_id"`
+      `FROM "users" INNER JOIN "groups" ON ("user"."group_id" = "group"."user_id")`
     );
     testQuery(
       "can provide any expression",
-      () => builder().join("groups", eq("user.group_id", "group.user_id")),
-      `INNER JOIN "groups" ON "user"."group_id" = "group"."user_id"`
+      () => builder().join("groups", ops.eq("user.group_id", "group.user_id")),
+      `INNER JOIN "groups" ON ("user"."group_id" = "group"."user_id")`
     );
     testQuery(
       "multiple joins",
@@ -322,7 +358,7 @@ describe("join", () => {
         builder()
           .join("groups", "user.group_id", "group.user_id")
           .join("products", "product.group_id", "group.id"),
-      `INNER JOIN "groups" ON "user"."group_id" = "group"."user_id" INNER JOIN "products" ON "product"."group_id" = "group"."id"`
+      `INNER JOIN "groups" ON ("user"."group_id" = "group"."user_id") INNER JOIN "products" ON ("product"."group_id" = "group"."id")`
     );
     testQuery(
       "join on a subquery",
@@ -334,7 +370,7 @@ describe("join", () => {
           "a.user_id",
           "b.id"
         ),
-      `INNER JOIN (SELECT * FROM "users") AS "a" ON "a"."user_id" = "b"."id"`
+      `INNER JOIN (SELECT * FROM "users") AS "a" ON ("a"."user_id" = "b"."id")`
     );
     testQuery(
       "condition uses a subquery",
@@ -342,11 +378,11 @@ describe("join", () => {
         builder().join(
           "groups",
           "user.group_id",
-          builder(where(eq("user.id", bind("userid", 2))))
+          builder(where(ops.eq("user.id", bind("userid", 2))))
             .select()
             .from("users")
         ),
-      `INNER JOIN "groups" ON "user"."group_id" = (SELECT * FROM "users" WHERE "user"."id" = :userid)`
+      `INNER JOIN "groups" ON ("user"."group_id" = (SELECT * FROM "users" WHERE ("user"."id" = :userid)))`
     );
   });
 });
