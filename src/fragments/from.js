@@ -3,7 +3,7 @@ import quote from "../util/quote";
 import wrap from "../util/wrap";
 import { Builder } from "../builder";
 
-export const concatSubQueries = arr => {
+export const concatSubQueries = (arr, joinStr = ", ") => {
   const reduced = arr.reduce(
     (prev, curr) => ({
       query: prev.query.concat(curr.query),
@@ -15,41 +15,34 @@ export const concatSubQueries = arr => {
     }
   );
   return {
-    query: reduced.query.filter(f => f).join(", "),
+    query: reduced.query.filter(f => f).join(joinStr),
     binds: reduced.binds
   };
 };
 
+export const serializeTable = table => {
+  if (table instanceof Builder) {
+    let { query, binds } = table.serialize({ partial: true });
+    return {
+      query: `(${query}) AS ${quote(table.alias)}`,
+      binds
+    };
+  } else if (table instanceof FromFragment) {
+    return table.serialize();
+  } else {
+    return {
+      query: quote(table),
+      binds: []
+    };
+  }
+};
 export default class FromFragment extends Fragment {
   constructor(...tables) {
     super();
     this.tables = tables;
   }
   serialize() {
-    const subqueries = concatSubQueries(
-      this.tables
-        .filter(table => table instanceof Builder)
-        .map(builder => {
-          let { query, binds } = builder.serialize({ partial: true });
-          return {
-            query: `(${query}) AS ${quote(builder.alias)}`,
-            binds
-          };
-        })
-        .concat(
-          this.tables
-            .filter(table => table instanceof FromFragment)
-            .map(fragment => fragment.serialize())
-        )
-    );
-
-    const strings = this.tables
-      .filter(table => typeof table === "string")
-      .map(quote);
-    return {
-      query: [subqueries.query, ...strings].filter(f => f).join(", "),
-      binds: subqueries.binds
-    };
+    return concatSubQueries(this.tables.map(serializeTable));
   }
 }
 

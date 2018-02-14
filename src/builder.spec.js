@@ -175,6 +175,7 @@ describe("Serializing just fragments", () => {
 testQuery(
   "table.column syntax",
   builder().select(
+    "user.*",
     "user.username",
     "groups.groupname",
     "user.id",
@@ -183,7 +184,7 @@ testQuery(
       "user.last_name": "last"
     }
   ),
-  `SELECT "user"."username", "groups"."groupname", "user"."id", "user"."first_name" AS "first", "user"."last_name" AS "last"`
+  `SELECT "user".*, "user"."username", "groups"."groupname", "user"."id", "user"."first_name" AS "first", "user"."last_name" AS "last"`
 );
 
 describe("subqueries", () => {
@@ -215,7 +216,7 @@ describe("subqueries", () => {
         )
       ),
       {
-        query: `FROM (SELECT * FROM "users") AS "alias", "user", (SELECT * FROM "groups" WHERE "user"."user_id" = :userid) AS "alias2"`,
+        query: `FROM "user", (SELECT * FROM "users") AS "alias", (SELECT * FROM "groups" WHERE "user"."user_id" = :userid) AS "alias2"`,
         binds: [
           {
             userid: 2
@@ -300,7 +301,55 @@ describe("binary expressions", () => {
     test("like");
   });
 });
-describe.skip("join");
+describe("join", () => {
+  describe("inner joins", () => {
+    testQuery(
+      "simple inner join",
+      () =>
+        builder()
+          .from("users")
+          .join("groups", "user.group_id", "group.user_id"),
+      `FROM "users" INNER JOIN "groups" ON "user"."group_id" = "group"."user_id"`
+    );
+    testQuery(
+      "can provide any expression",
+      () => builder().join("groups", eq("user.group_id", "group.user_id")),
+      `INNER JOIN "groups" ON "user"."group_id" = "group"."user_id"`
+    );
+    testQuery(
+      "multiple joins",
+      () =>
+        builder()
+          .join("groups", "user.group_id", "group.user_id")
+          .join("products", "product.group_id", "group.id"),
+      `INNER JOIN "groups" ON "user"."group_id" = "group"."user_id" INNER JOIN "products" ON "product"."group_id" = "group"."id"`
+    );
+    testQuery(
+      "join on a subquery",
+      () =>
+        builder().join(
+          builder("a")
+            .select()
+            .from("users"),
+          "a.user_id",
+          "b.id"
+        ),
+      `INNER JOIN (SELECT * FROM "users") AS "a" ON "a"."user_id" = "b"."id"`
+    );
+    testQuery(
+      "condition uses a subquery",
+      () =>
+        builder().join(
+          "groups",
+          "user.group_id",
+          builder()
+            .select()
+            .from("users")
+        ),
+      `INNER JOIN "groups" ON "user"."group_id" = (SELECT * FROM "users")`
+    );
+  });
+});
 describe.skip("where");
 describe.skip("having");
 describe.skip("group by");
