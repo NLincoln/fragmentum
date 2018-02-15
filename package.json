@@ -1,6 +1,6 @@
 {
   "name": "fragmentum",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A SQL Query builder optimized for backend applications",
   "main": "dist/bundle.js",
   "author": "Nathan Lincoln <nlincoln@intellifarms.com>",
@@ -27,11 +27,18 @@
     "moduleNameMapper": {
       "fragmentum": "<rootDir>/src/index.js"
     },
-    "coveragePathIgnorePatterns": ["<rootDir>/tests/*"],
-    "coverageReporters": ["text-summary", "lcov"]
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/tests/*"
+    ],
+    "coverageReporters": [
+      "text-summary",
+      "lcov"
+    ]
   },
   "babel": {
-    "plugins": ["transform-object-rest-spread"],
+    "plugins": [
+      "transform-object-rest-spread"
+    ],
     "env": {
       "build": {
         "presets": [
