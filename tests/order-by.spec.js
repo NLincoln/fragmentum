@@ -1,5 +1,5 @@
 import { testQuery } from "./util";
-import { builder, orderBy } from "fragmentum";
+import { builder, orderBy, limit } from "fragmentum";
 
 describe("ORDER-BY", () => {
   testQuery(
@@ -21,5 +21,10 @@ describe("ORDER-BY", () => {
     "inside a builder",
     () => builder(orderBy(["users.id"])).orderBy(["groups.id", "DESC"]),
     `ORDER BY "users"."id" ASC, "groups"."id" DESC`
+  );
+  testQuery(
+    "it comes at the right place in a query",
+    builder(orderBy("id"), limit(19)),
+    `ORDER BY "id" ASC LIMIT 19`
   );
 });

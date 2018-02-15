@@ -117,9 +117,9 @@ export class Builder {
       tables.query,
       joins.query,
       conditions.query,
+      orderBys.query,
       limits.query,
-      offsets.query,
-      orderBys.query
+      offsets.query
     ].filter(f => f);
     let semi = partial ? "" : ";";
     return {
