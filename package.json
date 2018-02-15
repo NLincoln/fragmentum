@@ -23,11 +23,15 @@
     "rollup": "^0.55.5",
     "rollup-plugin-babel": "^3.0.3"
   },
-  "jest": {},
+  "jest": {
+    "moduleNameMapper": {
+      "fragmentum": "<rootDir>/src/index.js"
+    },
+    "coveragePathIgnorePatterns": ["<rootDir>/tests/*"],
+    "coverageReporters": ["text-summary", "lcov"]
+  },
   "babel": {
-    "plugins": [
-      "transform-object-rest-spread"
-    ],
+    "plugins": ["transform-object-rest-spread"],
     "env": {
       "build": {
         "presets": [

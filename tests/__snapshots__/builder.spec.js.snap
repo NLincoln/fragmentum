@@ -20,14 +20,3 @@ Object {
   "query": "SELECT \\"user\\" FROM \\"users\\";",
 }
 `;
-
-exports[`variable binds can bind variables 1`] = `
-Object {
-  "binds": Array [
-    Object {
-      "user_id": 3,
-    },
-  ],
-  "query": "SELECT * FROM \\"users\\" WHERE (\\"id\\" = :user_id);",
-}
-`;
