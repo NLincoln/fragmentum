@@ -15,14 +15,10 @@ describe("Limit-Offset", () => {
         .offset(bind("offset", 20)),
     {
       query: `LIMIT :limit OFFSET :offset`,
-      binds: [
-        {
-          limit: 10
-        },
-        {
-          offset: 20
-        }
-      ]
+      binds: {
+        limit: 10,
+        offset: 20
+      }
     }
   );
   testQuery("lone fragment: limit", () => limit(10), "LIMIT 10");

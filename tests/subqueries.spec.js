@@ -31,11 +31,9 @@ describe("subqueries", () => {
       ),
       {
         query: `FROM "user", (SELECT * FROM "users") AS "alias", (SELECT * FROM "groups" WHERE ("user"."user_id" = :userid)) AS "alias2"`,
-        binds: [
-          {
-            userid: 2
-          }
-        ]
+        binds: {
+          userid: 2
+        }
       }
     );
 
