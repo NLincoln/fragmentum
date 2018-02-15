@@ -390,3 +390,4 @@ describe.skip("where");
 describe.skip("having");
 describe.skip("group by");
 describe.skip("limit/offset");
+describe.skip("SQL functions");
