@@ -2,21 +2,21 @@
 
 exports[`builder a healthy mix 1`] = `
 Object {
-  "binds": Array [],
+  "binds": Object {},
   "query": "SELECT * FROM \\"users\\";",
 }
 `;
 
 exports[`builder list of fragments 1`] = `
 Object {
-  "binds": Array [],
+  "binds": Object {},
   "query": "SELECT \\"user\\" FROM \\"users\\";",
 }
 `;
 
 exports[`builder method chaining 1`] = `
 Object {
-  "binds": Array [],
+  "binds": Object {},
   "query": "SELECT \\"user\\" FROM \\"users\\";",
 }
 `;

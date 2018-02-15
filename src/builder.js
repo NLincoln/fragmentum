@@ -118,14 +118,15 @@ export class Builder {
     let semi = partial ? "" : ";";
     return {
       query: `${fragments.join(" ")}${semi}`,
-      binds: [
+      binds: Object.assign(
+        {},
         ...conditions.binds,
         ...tables.binds,
         ...joins.binds,
         ...limits.binds,
         ...offsets.binds,
         ...orderBys.binds
-      ]
+      )
     };
   }
 }
