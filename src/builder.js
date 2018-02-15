@@ -4,6 +4,7 @@ import WhereFragment, { where } from "./fragments/where";
 import JoinFragment, { join } from "./fragments/join";
 import LimitFragment, { limit } from "./fragments/limit";
 import OffsetFragment, { offset } from "./fragments/offset";
+import OrderByFragment, { orderBy } from "./fragments/order-by";
 
 export class Builder {
   constructor(fragments) {
@@ -88,6 +89,10 @@ export class Builder {
     return concatSubQueries(this.serializeFragment(OffsetFragment), " ");
   }
 
+  serializeOrderBy() {
+    return concatSubQueries(this.serializeFragment(OrderByFragment));
+  }
+
   serialize(opts = {}) {
     let partial = Boolean(opts.partial);
     const columns = this.serializeColumns();
@@ -96,6 +101,7 @@ export class Builder {
     const joins = this.serializeJoins();
     const limits = this.serializeLimit();
     const offsets = this.serializeOffsets();
+    const orderBys = this.serializeOrderBy();
 
     if (!columns || !tables.query) {
       partial = true;
@@ -106,7 +112,8 @@ export class Builder {
       joins.query,
       conditions.query,
       limits.query,
-      offsets.query
+      offsets.query,
+      orderBys.query
     ].filter(f => f);
     let semi = partial ? "" : ";";
     return {
@@ -116,7 +123,8 @@ export class Builder {
         ...tables.binds,
         ...joins.binds,
         ...limits.binds,
-        ...offsets.binds
+        ...offsets.binds,
+        ...orderBys.binds
       ]
     };
   }
@@ -132,4 +140,6 @@ Builder.prototype.from = builderFunc(from);
 Builder.prototype.join = builderFunc(join);
 Builder.prototype.limit = builderFunc(limit);
 Builder.prototype.offset = builderFunc(offset);
+Builder.prototype.orderBy = builderFunc(orderBy);
+
 export const builder = (...fragments) => new Builder(fragments);
