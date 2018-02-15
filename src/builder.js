@@ -90,7 +90,13 @@ export class Builder {
   }
 
   serializeOrderBy() {
-    return concatSubQueries(this.serializeFragment(OrderByFragment));
+    const { query, binds } = concatSubQueries(
+      this.serializeFragment(OrderByFragment)
+    );
+    return {
+      query: `ORDER BY ${query}`,
+      binds
+    };
   }
 
   serialize(opts = {}) {

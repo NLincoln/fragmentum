@@ -20,6 +20,6 @@ describe("ORDER-BY", () => {
   testQuery(
     "inside a builder",
     () => builder(orderBy(["users.id"])).orderBy(["groups.id", "DESC"]),
-    `"users"."id" ASC, "groups"."id" DESC`
+    `ORDER BY "users"."id" ASC, "groups"."id" DESC`
   );
 });
