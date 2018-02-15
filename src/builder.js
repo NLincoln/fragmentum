@@ -2,6 +2,8 @@ import SelectFragment, { select } from "./fragments/select";
 import FromFragment, { from, concatSubQueries } from "./fragments/from";
 import WhereFragment, { where } from "./fragments/where";
 import JoinFragment, { join } from "./fragments/join";
+import LimitFragment, { limit } from "./fragments/limit";
+import OffsetFragment, { offset } from "./fragments/offset";
 
 export class Builder {
   constructor(fragments) {
@@ -78,12 +80,23 @@ export class Builder {
     return concatSubQueries(this.serializeFragment(JoinFragment), " ");
   }
 
+  serializeLimit() {
+    return concatSubQueries(this.serializeFragment(LimitFragment), " ");
+  }
+
+  serializeOffsets() {
+    return concatSubQueries(this.serializeFragment(OffsetFragment), " ");
+  }
+
   serialize(opts = {}) {
     let partial = Boolean(opts.partial);
     const columns = this.serializeColumns();
     const tables = this.serializeTables();
     const conditions = this.serializeConditions();
     const joins = this.serializeJoins();
+    const limits = this.serializeLimit();
+    const offsets = this.serializeOffsets();
+
     if (!columns || !tables.query) {
       partial = true;
     }
@@ -91,12 +104,20 @@ export class Builder {
       columns,
       tables.query,
       joins.query,
-      conditions.query
+      conditions.query,
+      limits.query,
+      offsets.query
     ].filter(f => f);
     let semi = partial ? "" : ";";
     return {
       query: `${fragments.join(" ")}${semi}`,
-      binds: [...conditions.binds, ...tables.binds, ...joins.binds]
+      binds: [
+        ...conditions.binds,
+        ...tables.binds,
+        ...joins.binds,
+        ...limits.binds,
+        ...offsets.binds
+      ]
     };
   }
 }
@@ -109,5 +130,6 @@ Builder.prototype.select = builderFunc(select);
 Builder.prototype.where = builderFunc(where);
 Builder.prototype.from = builderFunc(from);
 Builder.prototype.join = builderFunc(join);
-
+Builder.prototype.limit = builderFunc(limit);
+Builder.prototype.offset = builderFunc(offset);
 export const builder = (...fragments) => new Builder(fragments);
