@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`variable binds can bind variables 1`] = `
+Object {
+  "binds": Array [
+    Object {
+      "user_id": 3,
+    },
+  ],
+  "query": "SELECT * FROM \\"users\\" WHERE (\\"id\\" = :user_id);",
+}
+`;
