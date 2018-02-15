@@ -1,6 +1,6 @@
 {
   "name": "fragmentum",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A SQL Query builder optimized for backend applications",
   "main": "dist/bundle.js",
   "author": "Nathan Lincoln <nlincoln@intellifarms.com>",
@@ -25,7 +25,9 @@
   },
   "jest": {},
   "babel": {
-    "plugins": ["transform-object-rest-spread"],
+    "plugins": [
+      "transform-object-rest-spread"
+    ],
     "env": {
       "build": {
         "presets": [
