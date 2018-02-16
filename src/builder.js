@@ -93,6 +93,9 @@ export class Builder {
     const { query, binds } = concatSubQueries(
       this.serializeFragment(OrderByFragment)
     );
+    if (!query) {
+      return { query, binds };
+    }
     return {
       query: `ORDER BY ${query}`,
       binds
