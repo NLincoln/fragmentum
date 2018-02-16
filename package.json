@@ -1,6 +1,6 @@
 {
   "name": "fragmentum",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A SQL Query builder optimized for backend applications",
   "main": "dist/bundle.js",
   "author": "Nathan Lincoln <nlincoln@intellifarms.com>",
