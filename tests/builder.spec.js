@@ -45,9 +45,7 @@ describe("Serializing just fragments", () => {
     `FROM "users"`
   );
   testQuery("omitting the from portion", builder(select()), "SELECT *");
-  test("select", () => {
-    expect(select().serialize()).toEqual("*");
-  });
+  testQuery("select", select(), "*");
   testQuery("from", from("users"), `"users"`);
   test("where", () => {
     expect(where(ops.eq("username", value(2))).serialize().query).toEqual(

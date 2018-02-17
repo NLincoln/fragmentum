@@ -1,4 +1,4 @@
-import { builder, ops, value } from "fragmentum";
+import { builder, select, ops, value, window, agg } from "fragmentum";
 import { testQuery } from "./util";
 
 describe("select statements", () => {
@@ -83,5 +83,40 @@ describe("select statements", () => {
       .from("users")
       .where(ops.eq("id", value(2))),
     `SELECT "id", "username" FROM "users" WHERE ("id" = '2');`
+  );
+});
+
+describe("window functions", () => {
+  testQuery(
+    "other basic over clause",
+    () => builder(select(agg.count().over())),
+    `SELECT COUNT(*) OVER ()`
+  );
+  testQuery(
+    "with partition",
+    () =>
+      builder(
+        select(
+          agg
+            .count()
+            .over()
+            .partition("group")
+        )
+      ),
+    `SELECT COUNT(*) OVER (PARTITION BY "group")`
+  );
+  testQuery(
+    "with partition and order by",
+    () =>
+      builder(
+        select(
+          agg
+            .count()
+            .over()
+            .partition("group")
+            .orderBy("username")
+        )
+      ),
+    `SELECT COUNT(*) OVER (PARTITION BY "group" ORDER BY "username" ASC)`
   );
 });

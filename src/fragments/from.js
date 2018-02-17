@@ -4,7 +4,7 @@ import wrap from "../util/wrap";
 import { Builder } from "../builder";
 
 export const concatSubQueries = (arr, joinStr = ", ") => {
-  const reduced = arr.reduce(
+  const reduced = arr.filter(f => f.query).reduce(
     (prev, curr) => ({
       query: prev.query.concat(curr.query),
       binds: prev.binds.concat(curr.binds)

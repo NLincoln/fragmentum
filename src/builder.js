@@ -42,11 +42,14 @@ export class Builder {
   }
 
   serializeColumns() {
-    const serialized = this.serializeFragment(SelectFragment).join(", ");
-    if (serialized) {
-      return `SELECT ${serialized}`;
+    let { query, binds } = concatSubQueries(
+      this.serializeFragment(SelectFragment)
+    );
+    if (query) {
+      query = `SELECT ${query}`;
+      return { query, binds };
     }
-    return "";
+    return { query: "", binds: [] };
   }
   serializeTables() {
     let { query, binds } = concatSubQueries(
@@ -112,11 +115,11 @@ export class Builder {
     const offsets = this.serializeOffsets();
     const orderBys = this.serializeOrderBy();
 
-    if (!columns || !tables.query) {
+    if (!columns.query || !tables.query) {
       partial = true;
     }
     let fragments = [
-      columns,
+      columns.query,
       tables.query,
       joins.query,
       conditions.query,
@@ -129,6 +132,7 @@ export class Builder {
       query: `${fragments.join(" ")}${semi}`,
       binds: Object.assign(
         {},
+        ...columns.binds,
         ...conditions.binds,
         ...tables.binds,
         ...joins.binds,
