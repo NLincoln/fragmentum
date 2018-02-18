@@ -25,6 +25,15 @@ const serializeColumn = column => {
   }
   return columnQuote(column);
 };
+export const serializeMaybeExpression = serializeColumn => column => {
+  if (column instanceof Expression) {
+    return column.serialize();
+  }
+  return {
+    query: serializeColumn(column),
+    binds: []
+  };
+};
 
 export default class SelectFragment extends Fragment {
   constructor(...columns) {
@@ -36,15 +45,7 @@ export default class SelectFragment extends Fragment {
       return { query: "*", binds: [] };
     }
     return concatQueries(
-      this.columns.map(column => {
-        if (column instanceof Expression) {
-          return column.serialize();
-        }
-        return {
-          query: serializeColumn(column),
-          binds: []
-        };
-      })
+      this.columns.map(serializeMaybeExpression(serializeColumn))
     );
   }
 }

@@ -3,16 +3,7 @@ import columnQuote from "../util/column-quote";
 import quote from "../util/quote";
 import WindowExpression from "./window";
 import { concatQueries } from "../util/concat-queries";
-
-const serializeParam = arg => {
-  if (arg instanceof Expression) {
-    return arg.serialize();
-  }
-  return {
-    query: columnQuote(arg),
-    binds: []
-  };
-};
+import { serializeMaybeExpression } from "../fragments/select";
 
 export default class AggregateFunctionExpression extends Expression {
   constructor(func, ...args) {
@@ -36,7 +27,7 @@ export default class AggregateFunctionExpression extends Expression {
       };
     }
     return concatQueries(
-      this.args.map(serializeParam).map(arg => {
+      this.args.map(serializeMaybeExpression(columnQuote)).map(arg => {
         const { query, binds } = arg;
         return {
           query: `${this.func}(${query})`,
