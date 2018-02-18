@@ -2,8 +2,12 @@ import SelectFragment, { select } from "./fragments/select";
 import FromFragment, { from, concatSubQueries } from "./fragments/from";
 import WhereFragment, { where } from "./fragments/where";
 import JoinFragment, { join } from "./fragments/join";
-import LimitFragment, { limit } from "./fragments/limit";
-import OffsetFragment, { offset } from "./fragments/offset";
+import {
+  LimitFragment,
+  OffsetFragment,
+  limit,
+  offset
+} from "./fragments/limit";
 import OrderByFragment, { orderBy } from "./fragments/order-by";
 import GroupByFragment, { groupBy } from "./fragments/group-by";
 import HavingFragment, { having } from "./fragments/having";
