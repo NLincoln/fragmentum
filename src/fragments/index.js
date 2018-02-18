@@ -6,3 +6,4 @@ export { where } from "./where";
 export { limit } from "./limit";
 export { offset } from "./offset";
 export { orderBy } from "./order-by";
+export { groupBy } from "./group-by";
