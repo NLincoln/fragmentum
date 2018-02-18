@@ -13,7 +13,8 @@ const binaryOps = {
   gt: Symbol(),
   gte: Symbol(),
   shiftLeft: Symbol(),
-  shiftRight: Symbol()
+  shiftRight: Symbol(),
+  in: Symbol()
 };
 
 const associativeOps = {
@@ -27,13 +28,21 @@ const associativeOps = {
 };
 
 const serializeExpr = expr => {
-  const serialized = expr.serialize({ partial: true });
   if (expr instanceof Builder || expr instanceof FromFragment) {
+    const serialized = expr.serialize({ partial: true });
+
     return {
       ...serialized,
       query: quote(serialized.query, { parens: true })
     };
+  } else if (Array.isArray(expr)) {
+    const { query, binds } = concatQueries(expr.map(serializeExpr));
+    return {
+      query: quote(query, { parens: true }),
+      binds
+    };
   }
+  const serialized = expr.serialize({ partial: true });
   if (typeof serialized === "object" && "binds" in serialized) {
     return serialized;
   }
@@ -65,7 +74,8 @@ export default class BinaryExpression extends Expression {
       [binaryOps.ne]: "!=",
       [binaryOps.gte]: ">=",
       [binaryOps.shiftLeft]: "<<",
-      [binaryOps.shiftRight]: ">>"
+      [binaryOps.shiftRight]: ">>",
+      [binaryOps.in]: "IN"
     }[this.op];
     const lhs = serializeExpr(this.lhs);
     const rhs = serializeExpr(this.rhs);
@@ -103,6 +113,8 @@ export default class BinaryExpression extends Expression {
 const normalizeOperand = operand => {
   if (operand instanceof Expression || operand instanceof Builder) {
     return operand;
+  } else if (Array.isArray(operand)) {
+    return operand.map(normalizeOperand);
   } else {
     return new Identifier(operand);
   }
@@ -132,5 +144,6 @@ export const ops = {
   add: makeAssociativeOp(associativeOps.add),
   sub: makeAssociativeOp(associativeOps.sub),
   div: makeAssociativeOp(associativeOps.div),
-  mult: makeAssociativeOp(associativeOps.mult)
+  mult: makeAssociativeOp(associativeOps.mult),
+  in: makeBinaryOp(binaryOps.in)
 };

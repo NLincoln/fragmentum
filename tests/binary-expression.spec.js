@@ -1,4 +1,4 @@
-import { builder, where, ops, bind } from "fragmentum";
+import { builder, where, ops, bind, select, value } from "fragmentum";
 import { testQuery } from "./util";
 
 describe("binary expressions", () => {
@@ -52,5 +52,37 @@ describe("binary expressions", () => {
   associativeOpsTest(ops.bit.xor, "#");
   test("NOT !");
   test("like");
-  test("in");
+  describe("in", () => {
+    testQuery(
+      "passing a subquery",
+      () => builder().where(ops.in("id", builder(select("id")).from("users"))),
+      `WHERE ("id" IN (SELECT "id" FROM "users"))`
+    );
+    testQuery(
+      "passing in an array of values",
+      () => builder().where(ops.in("id", [1, 2, 3].map(value))),
+      `WHERE ("id" IN ('1', '2', '3'))`
+    );
+    testQuery(
+      "passing in a bind expression",
+      () => builder().where(ops.in("id", bind("id", [1, 2, 3]))),
+      { query: `WHERE ("id" IN :id)`, binds: { id: [1, 2, 3] } }
+    );
+    testQuery(
+      "passing in further expressions because why the heck not",
+      () =>
+        builder().where(
+          ops.in("id", [
+            builder()
+              .select("id")
+              .from("users"),
+            builder()
+              .select("id")
+              .from("users"),
+            ops.add(value(1), value(2))
+          ])
+        ),
+      `WHERE ("id" IN ((SELECT "id" FROM "users"), (SELECT "id" FROM "users"), ('1' + '2')))`
+    );
+  });
 });
