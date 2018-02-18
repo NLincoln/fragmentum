@@ -8,20 +8,13 @@ describe("builder", () => {
     `SELECT * FROM "users";`
   );
   testQuery("list of fragments", builder(select("user"), from("users")));
-  test("method chaining", () => {
-    const sql = builder()
+  testQuery(
+    "method chaining",
+    builder()
       .select("user")
       .from("users")
-      .serialize();
-    expect(sql).toMatchSnapshot();
-  });
-  test("a healthy mix", () => {
-    expect(
-      builder(select())
-        .from("users")
-        .serialize()
-    ).toMatchSnapshot();
-  });
+  );
+  testQuery("a healthy mix", builder(select()).from("users"));
 });
 
 describe("conditional fragments", () => {
@@ -47,11 +40,7 @@ describe("Serializing just fragments", () => {
   testQuery("omitting the from portion", builder(select()), "SELECT *");
   testQuery("select", select(), "*");
   testQuery("from", from("users"), `"users"`);
-  test("where", () => {
-    expect(where(ops.eq("username", value(2))).serialize().query).toEqual(
-      `("username" = '2')`
-    );
-  });
+  testQuery("where", where(ops.eq("username", value(2))), `("username" = '2')`);
 });
 
 testQuery(
@@ -68,10 +57,5 @@ testQuery(
   ),
   `SELECT "user".*, "user"."username", "groups"."groupname", "user"."id", "user"."first_name" AS "first", "user"."last_name" AS "last"`
 );
-describe.skip("where");
-describe.skip("having");
-describe.skip("group by");
-describe.skip("limit/offset");
 describe.skip("immutability");
 describe.skip("custom SQL functions");
-describe.skip("SQL functions");

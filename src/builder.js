@@ -6,6 +6,7 @@ import LimitFragment, { limit } from "./fragments/limit";
 import OffsetFragment, { offset } from "./fragments/offset";
 import OrderByFragment, { orderBy } from "./fragments/order-by";
 import GroupByFragment, { groupBy } from "./fragments/group-by";
+import HavingFragment, { having } from "./fragments/having";
 
 export class Builder {
   constructor(fragments) {
@@ -117,6 +118,20 @@ export class Builder {
       binds
     };
   }
+
+  serializeHavings() {
+    const { query, binds } = concatSubQueries(
+      this.serializeFragment(HavingFragment),
+      " AND "
+    );
+    if (!query) {
+      return { query, binds };
+    }
+    return {
+      query: `HAVING ${query}`,
+      binds
+    };
+  }
   serialize(opts = {}) {
     let partial = Boolean(opts.partial);
     const columns = this.serializeColumns();
@@ -126,6 +141,7 @@ export class Builder {
     const limits = this.serializeLimit();
     const offsets = this.serializeOffsets();
     const groupBys = this.serializeGroupBy();
+    const havings = this.serializeHavings();
     const orderBys = this.serializeOrderBy();
 
     if (!columns.query || !tables.query) {
@@ -137,6 +153,7 @@ export class Builder {
       joins.query,
       conditions.query,
       groupBys.query,
+      havings.query,
       orderBys.query,
       limits.query,
       offsets.query
@@ -149,6 +166,7 @@ export class Builder {
         ...columns.binds,
         ...conditions.binds,
         ...groupBys.binds,
+        ...havings.binds,
         ...tables.binds,
         ...joins.binds,
         ...limits.binds,
@@ -171,5 +189,5 @@ Builder.prototype.limit = builderFunc(limit);
 Builder.prototype.offset = builderFunc(offset);
 Builder.prototype.orderBy = builderFunc(orderBy);
 Builder.prototype.groupBy = builderFunc(groupBy);
-
+Builder.prototype.having = builderFunc(having);
 export const builder = (...fragments) => new Builder(fragments);
