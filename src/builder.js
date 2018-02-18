@@ -8,6 +8,19 @@ import OrderByFragment, { orderBy } from "./fragments/order-by";
 import GroupByFragment, { groupBy } from "./fragments/group-by";
 import HavingFragment, { having } from "./fragments/having";
 
+const serializeQuery = fragments =>
+  fragments
+    .map(fragment => fragment.query)
+    .filter(f => f)
+    .join(" ");
+const serializeBinds = fragments =>
+  Object.assign(
+    {},
+    ...fragments
+      .map(fragment => fragment.binds)
+      .reduce((prev, curr) => prev.concat(curr), [])
+  );
+
 export class Builder {
   constructor(fragments) {
     // The first argument of our fragments array may be an alias.
@@ -70,16 +83,8 @@ export class Builder {
       partial = true;
     }
     let semi = partial ? "" : ";";
-    const query = fragments
-      .map(fragment => fragment.query)
-      .filter(f => f)
-      .join(" ");
-    const binds = Object.assign(
-      {},
-      ...fragments
-        .map(fragment => fragment.binds)
-        .reduce((prev, curr) => prev.concat(curr), [])
-    );
+    const query = serializeQuery(fragments);
+    const binds = serializeBinds(fragments);
     return {
       query: `${query}${semi}`,
       binds
