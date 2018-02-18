@@ -1,5 +1,5 @@
 import Fragment from "./fragment";
-import wrap from "../util/wrap";
+import wrap from "../util/function-constructor";
 
 const createFragment = append =>
   class extends Fragment {

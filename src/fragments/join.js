@@ -1,6 +1,6 @@
 import Fragment from "./fragment";
 import BinaryExpression, { ops } from "../expressions/binary-expression";
-import wrap from "../util/wrap";
+import wrap from "../util/function-constructor";
 import quote from "../util/quote";
 import { serializeTable } from "./from";
 

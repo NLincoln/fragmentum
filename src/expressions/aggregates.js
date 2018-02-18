@@ -1,8 +1,8 @@
 import Expression from "./expression";
-import columnQuote from "../util/column";
+import columnQuote from "../util/column-quote";
 import quote from "../util/quote";
-import { concatSubQueries } from "../fragments/from";
 import WindowExpression from "./window";
+import { concatQueries } from "../util/concat-queries";
 
 const serializeParam = arg => {
   if (arg instanceof Expression) {
@@ -35,7 +35,7 @@ export default class AggregateFunctionExpression extends Expression {
         binds: []
       };
     }
-    return concatSubQueries(
+    return concatQueries(
       this.args.map(serializeParam).map(arg => {
         const { query, binds } = arg;
         return {

@@ -1,6 +1,6 @@
 import Fragment from "./fragment";
-import wrap from "../util/wrap";
-import { concatSubQueries } from "./from";
+import wrap from "../util/function-constructor";
+import { concatQueries } from "../util/concat-queries";
 
 export default class HavingFragment extends Fragment {
   constructor(...exprs) {
@@ -8,7 +8,7 @@ export default class HavingFragment extends Fragment {
     this.exprs = exprs;
   }
   serialize() {
-    return concatSubQueries(
+    return concatQueries(
       this.exprs.map(expr => {
         return expr.serialize();
       }),

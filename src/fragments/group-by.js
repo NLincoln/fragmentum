@@ -1,6 +1,6 @@
 import Fragment from "./fragment";
-import columnQuote from "../util/column";
-import wrap from "../util/wrap";
+import columnQuote from "../util/column-quote";
+import wrap from "../util/function-constructor";
 
 export default class GroupByFragment extends Fragment {
   constructor(...columns) {

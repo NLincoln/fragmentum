@@ -1,5 +1,5 @@
 import Expression from "./expression";
-import columnQuote from "../util/column";
+import columnQuote from "../util/column-quote";
 
 export default class Identifier extends Expression {
   constructor(name) {

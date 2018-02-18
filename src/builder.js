@@ -1,5 +1,5 @@
 import SelectFragment, { select } from "./fragments/select";
-import FromFragment, { from, concatSubQueries } from "./fragments/from";
+import FromFragment, { from } from "./fragments/from";
 import WhereFragment, { where } from "./fragments/where";
 import JoinFragment, { join } from "./fragments/join";
 import {
@@ -11,6 +11,7 @@ import {
 import OrderByFragment, { orderBy } from "./fragments/order-by";
 import GroupByFragment, { groupBy } from "./fragments/group-by";
 import HavingFragment, { having } from "./fragments/having";
+import { concatQueries } from "./util/concat-queries";
 
 const serializeQuery = fragments =>
   fragments
@@ -54,7 +55,7 @@ export class Builder {
     return new Builder(nextFragments);
   }
   serializeFragment(klass, prepend, joinStr = ", ") {
-    const { query, binds } = concatSubQueries(
+    const { query, binds } = concatQueries(
       this.fragments
         .filter(fragment => fragment instanceof klass)
         .map(fragment => fragment.serialize()),

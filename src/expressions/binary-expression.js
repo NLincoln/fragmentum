@@ -1,8 +1,9 @@
 import Expression from "./expression";
 import Identifier from "./identifier";
 import { Builder } from "../builder";
-import FromFragment, { concatSubQueries } from "../fragments/from";
+import FromFragment from "../fragments/from";
 import quote from "../util/quote";
+import { concatQueries } from "../util/concat-queries";
 
 const binaryOps = {
   eq: Symbol(),
@@ -84,7 +85,7 @@ export default class BinaryExpression extends Expression {
       [associativeOps.or]: "|"
     }[this.op];
 
-    const exprs = concatSubQueries(this.args.map(serializeExpr), ` ${op} `);
+    const exprs = concatQueries(this.args.map(serializeExpr), ` ${op} `);
     return {
       query: quote(exprs.query, { parens: true }),
       binds: exprs.binds

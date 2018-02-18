@@ -1,9 +1,9 @@
 import Fragment from "./fragment";
 import quote from "../util/quote";
-import columnQuote from "../util/column";
+import columnQuote from "../util/column-quote";
 import Expression from "../expressions/expression";
-import { concatSubQueries } from "./from";
-import wrap from "../util/wrap";
+import wrap from "../util/function-constructor";
+import { concatQueries } from "../util/concat-queries";
 
 const serializePair = ([key, alias]) => {
   if (key && alias) {
@@ -35,7 +35,7 @@ export default class SelectFragment extends Fragment {
     if (this.columns.length === 0) {
       return { query: "*", binds: [] };
     }
-    return concatSubQueries(
+    return concatQueries(
       this.columns.map(column => {
         if (column instanceof Expression) {
           return column.serialize();

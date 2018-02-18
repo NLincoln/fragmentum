@@ -1,24 +1,8 @@
 import Fragment from "./fragment";
 import quote from "../util/quote";
-import wrap from "../util/wrap";
+import wrap from "../util/function-constructor";
 import { Builder } from "../builder";
-
-export const concatSubQueries = (arr, joinStr = ", ") => {
-  const reduced = arr.filter(f => f.query).reduce(
-    (prev, curr) => ({
-      query: prev.query.concat(curr.query),
-      binds: prev.binds.concat(curr.binds)
-    }),
-    {
-      query: [],
-      binds: []
-    }
-  );
-  return {
-    query: reduced.query.join(joinStr),
-    binds: reduced.binds
-  };
-};
+import { concatQueries } from "../util/concat-queries";
 
 export const serializeTable = table => {
   if (table instanceof Builder) {
@@ -42,7 +26,7 @@ export default class FromFragment extends Fragment {
     this.tables = tables;
   }
   serialize() {
-    return concatSubQueries(this.tables.map(serializeTable));
+    return concatQueries(this.tables.map(serializeTable));
   }
 }
 

@@ -1,5 +1,5 @@
 import Expression from "./expression";
-import wrap from "../util/wrap";
+import wrap from "../util/function-constructor";
 
 export default class Bind extends Expression {
   constructor(name, value) {

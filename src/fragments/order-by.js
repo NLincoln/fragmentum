@@ -1,6 +1,6 @@
 import Fragment from "./fragment";
-import wrap from "../util/wrap";
-import columnQuote from "../util/column";
+import wrap from "../util/function-constructor";
+import columnQuote from "../util/column-quote";
 
 export default class OrderByFragment extends Fragment {
   constructor(...columns) {
