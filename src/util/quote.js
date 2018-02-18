@@ -3,10 +3,10 @@ export default (val, opts = {}) => {
     return val;
   }
   if (opts.single) {
-    return `'${val}'`;
+    return `'${val.replace(`'`, `\\'`)}'`;
   }
   if (opts.parens) {
     return `(${val})`;
   }
-  return `"${val}"`;
+  return `"${val.replace(`"`, `\\"`)}"`;
 };
