@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
+    "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "jest": "^22.2.2",
@@ -27,20 +28,14 @@
     "moduleNameMapper": {
       "fragmentum": "<rootDir>/src/index.js"
     },
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/tests/*"
-    ],
-    "coverageReporters": [
-      "text-summary",
-      "lcov"
-    ]
+    "coveragePathIgnorePatterns": ["<rootDir>/tests/*"],
+    "coverageReporters": ["text-summary", "lcov"]
   },
   "babel": {
-    "plugins": [
-      "transform-object-rest-spread"
-    ],
+    "plugins": ["transform-object-rest-spread"],
     "env": {
       "build": {
+        "plugins": ["external-helpers"],
         "presets": [
           [
             "babel-preset-env",
