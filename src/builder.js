@@ -36,143 +36,53 @@ export class Builder {
     }
     return new Builder(nextFragments);
   }
-  serializeFragment(klass) {
-    return this.fragments
-      .filter(fragment => fragment instanceof klass)
-      .map(fragment => fragment.serialize())
-      .filter(f => (typeof f === "object" && f.query) || f);
-  }
-
-  serializeColumns() {
-    let { query, binds } = concatSubQueries(
-      this.serializeFragment(SelectFragment)
+  serializeFragment(klass, prepend, joinStr = ", ") {
+    const { query, binds } = concatSubQueries(
+      this.fragments
+        .filter(fragment => fragment instanceof klass)
+        .map(fragment => fragment.serialize()),
+      joinStr
     );
-    if (query) {
-      query = `SELECT ${query}`;
-      return { query, binds };
-    }
-    return { query: "", binds: [] };
-  }
-  serializeTables() {
-    let { query, binds } = concatSubQueries(
-      this.serializeFragment(FromFragment)
-    );
-    if (query) {
-      query = `FROM ${query}`;
-    }
-    return { query, binds };
-  }
-  serializeConditions() {
-    let conditions = this.fragments
-      .filter(fragment => fragment instanceof WhereFragment)
-      .map(fragment => fragment.serialize());
-    let binds = conditions
-      .map(({ binds }) => binds)
-      .reduce((prev, curr) => prev.concat(curr), []);
-    let conditionsQuery = conditions.map(({ query }) => query).join(" AND ");
-    if (conditionsQuery) {
+    if (query && prepend) {
       return {
-        query: `WHERE ${conditionsQuery}`,
+        query: `${prepend} ${query}`,
         binds
       };
     }
-    return {
-      query: "",
-      binds: []
-    };
+    return { query, binds };
   }
 
-  serializeJoins() {
-    return concatSubQueries(this.serializeFragment(JoinFragment), " ");
-  }
-
-  serializeLimit() {
-    return concatSubQueries(this.serializeFragment(LimitFragment), " ");
-  }
-
-  serializeOffsets() {
-    return concatSubQueries(this.serializeFragment(OffsetFragment), " ");
-  }
-
-  serializeOrderBy() {
-    const { query, binds } = concatSubQueries(
-      this.serializeFragment(OrderByFragment)
-    );
-    if (!query) {
-      return { query, binds };
-    }
-    return {
-      query: `ORDER BY ${query}`,
-      binds
-    };
-  }
-  serializeGroupBy() {
-    const { query, binds } = concatSubQueries(
-      this.serializeFragment(GroupByFragment)
-    );
-    if (!query) {
-      return { query, binds };
-    }
-    return {
-      query: `GROUP BY ${query}`,
-      binds
-    };
-  }
-
-  serializeHavings() {
-    const { query, binds } = concatSubQueries(
-      this.serializeFragment(HavingFragment),
-      " AND "
-    );
-    if (!query) {
-      return { query, binds };
-    }
-    return {
-      query: `HAVING ${query}`,
-      binds
-    };
-  }
   serialize(opts = {}) {
     let partial = Boolean(opts.partial);
-    const columns = this.serializeColumns();
-    const tables = this.serializeTables();
-    const conditions = this.serializeConditions();
-    const joins = this.serializeJoins();
-    const limits = this.serializeLimit();
-    const offsets = this.serializeOffsets();
-    const groupBys = this.serializeGroupBy();
-    const havings = this.serializeHavings();
-    const orderBys = this.serializeOrderBy();
-
+    let fragments = [
+      this.serializeFragment(SelectFragment, "SELECT"),
+      this.serializeFragment(FromFragment, "FROM"),
+      this.serializeFragment(WhereFragment, "WHERE"),
+      this.serializeFragment(JoinFragment, null, " "),
+      this.serializeFragment(GroupByFragment, "GROUP BY", ", "),
+      this.serializeFragment(HavingFragment, "HAVING", " AND "),
+      this.serializeFragment(OrderByFragment, "ORDER BY", ", "),
+      this.serializeFragment(LimitFragment, null, " "),
+      this.serializeFragment(OffsetFragment, null, " ")
+    ];
+    const [columns, tables] = fragments;
     if (!columns.query || !tables.query) {
       partial = true;
     }
-    let fragments = [
-      columns.query,
-      tables.query,
-      joins.query,
-      conditions.query,
-      groupBys.query,
-      havings.query,
-      orderBys.query,
-      limits.query,
-      offsets.query
-    ].filter(f => f);
     let semi = partial ? "" : ";";
+    const query = fragments
+      .map(fragment => fragment.query)
+      .filter(f => f)
+      .join(" ");
+    const binds = Object.assign(
+      {},
+      ...fragments
+        .map(fragment => fragment.binds)
+        .reduce((prev, curr) => prev.concat(curr), [])
+    );
     return {
-      query: `${fragments.join(" ")}${semi}`,
-      binds: Object.assign(
-        {},
-        ...columns.binds,
-        ...conditions.binds,
-        ...groupBys.binds,
-        ...havings.binds,
-        ...tables.binds,
-        ...joins.binds,
-        ...limits.binds,
-        ...offsets.binds,
-        ...orderBys.binds
-      )
+      query: `${query}${semi}`,
+      binds
     };
   }
 }
