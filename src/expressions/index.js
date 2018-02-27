@@ -5,3 +5,4 @@ export { bind } from "./bind";
 export { rawValue } from "./raw-value";
 export { agg } from "./aggregates";
 export { value } from "./value";
+export { raw } from "./raw";
