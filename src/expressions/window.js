@@ -25,34 +25,31 @@ export default class WindowExpression extends Expression {
     });
   }
 
-  serializePartition() {
-    if (!this.extra.partition) {
-      return null;
-    }
-    return `PARTITION BY ${this.extra.partition.serialize()}`;
-  }
-
-  serializeOrderBy() {
-    if (!this.extra.orderBy) {
+  serializeExtra(val, prepend) {
+    if (!val) {
       return {
         query: null,
         binds: []
       };
     }
-    const { query, binds } = this.extra.orderBy.serialize();
+    const { query, binds } = val.serialize();
+
     return {
-      query: `ORDER BY ${query}`,
+      query: `${prepend}${query}`,
       binds
     };
   }
 
   serialize() {
     const aggregate = this.aggregate.serialize();
-    const partition = this.serializePartition();
-    const orderBy = this.serializeOrderBy();
+    const partition = this.serializeExtra(
+      this.extra.partition,
+      "PARTITION BY "
+    );
+    const orderBy = this.serializeExtra(this.extra.orderBy, "ORDER BY ");
 
-    const query = [partition, orderBy.query].filter(f => f).join(" ");
-    const binds = [...aggregate.binds, ...orderBy.binds];
+    const query = [partition.query, orderBy.query].filter(f => f).join(" ");
+    const binds = [...partition.binds, ...aggregate.binds, ...orderBy.binds];
     return {
       query: `${aggregate.query} OVER (${query})`,
       binds

@@ -7,6 +7,9 @@ export default class Identifier extends Expression {
     this.name = name;
   }
   serialize() {
-    return columnQuote(String(this.name));
+    return {
+      query: columnQuote(String(this.name)),
+      binds: []
+    };
   }
 }

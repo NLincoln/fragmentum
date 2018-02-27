@@ -6,3 +6,4 @@ export { rawValue } from "./raw-value";
 export { agg } from "./aggregates";
 export { value } from "./value";
 export { raw } from "./raw";
+export { func } from "./func";

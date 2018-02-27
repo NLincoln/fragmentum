@@ -8,7 +8,10 @@ export default class RawValue extends Expression {
     this.value = value;
   }
   serialize() {
-    return quote(String(this.value), { single: true });
+    return {
+      query: quote(String(this.value), { single: true }),
+      binds: []
+    };
   }
 }
 

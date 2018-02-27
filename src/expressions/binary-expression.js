@@ -43,10 +43,7 @@ const serializeExpr = expr => {
     };
   }
   const serialized = expr.serialize({ partial: true });
-  if (typeof serialized === "object" && "binds" in serialized) {
-    return serialized;
-  }
-  return { query: serialized, binds: [] };
+  return serialized;
 };
 
 export default class BinaryExpression extends Expression {
