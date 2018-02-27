@@ -1,4 +1,4 @@
-import { builder, select, from, where, ops, value } from "fragmentum";
+import { builder, select, from, where, ops, rawValue } from "fragmentum";
 import { testQuery } from "./util";
 
 describe("builder", () => {
@@ -40,7 +40,11 @@ describe("Serializing just fragments", () => {
   testQuery("omitting the from portion", builder(select()), "SELECT *");
   testQuery("select", select(), "*");
   testQuery("from", from("users"), `"users"`);
-  testQuery("where", where(ops.eq("username", value(2))), `("username" = '2')`);
+  testQuery(
+    "where",
+    where(ops.eq("username", rawValue(2))),
+    `("username" = '2')`
+  );
 });
 
 testQuery(

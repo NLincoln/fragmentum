@@ -1,4 +1,4 @@
-import { builder, where, ops, bind, select, value } from "fragmentum";
+import { builder, where, ops, bind, select, rawValue } from "fragmentum";
 import { testQuery } from "./util";
 
 describe("binary expressions", () => {
@@ -36,11 +36,11 @@ describe("binary expressions", () => {
     binaryOpTest(func, expected);
     describe(`Associative OpTests: ${name}`, () => {
       testQuery(
-        "providing 3 values",
+        "providing 3 rawValues",
         () => where(func("id", "di", "d3")),
         `("id" ${expected} "di" ${expected} "d3")`
       );
-      testQuery("Providing one value", () => where(func("id")), `("id")`);
+      testQuery("Providing one rawValue", () => where(func("id")), `("id")`);
     });
   };
   associativeOpsTest(ops.add, "+");
@@ -59,8 +59,8 @@ describe("binary expressions", () => {
       `WHERE ("id" IN (SELECT "id" FROM "users"))`
     );
     testQuery(
-      "passing in an array of values",
-      () => builder().where(ops.in("id", [1, 2, 3].map(value))),
+      "passing in an array of rawValues",
+      () => builder().where(ops.in("id", [1, 2, 3].map(rawValue))),
       `WHERE ("id" IN ('1', '2', '3'))`
     );
     testQuery(
@@ -79,7 +79,7 @@ describe("binary expressions", () => {
             builder()
               .select("id")
               .from("users"),
-            ops.add(value(1), value(2))
+            ops.add(rawValue(1), rawValue(2))
           ])
         ),
       `WHERE ("id" IN ((SELECT "id" FROM "users"), (SELECT "id" FROM "users"), ('1' + '2')))`

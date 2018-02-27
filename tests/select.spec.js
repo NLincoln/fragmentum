@@ -1,4 +1,4 @@
-import { builder, select, ops, value, window, agg } from "fragmentum";
+import { builder, select, ops, rawValue, window, agg } from "fragmentum";
 import { testQuery } from "./util";
 
 describe("select statements", () => {
@@ -66,7 +66,7 @@ describe("select statements", () => {
     builder()
       .select()
       .from("users")
-      .where(ops.eq("user_id", value(1))),
+      .where(ops.eq("user_id", rawValue(1))),
     `SELECT * FROM "users" WHERE ("user_id" = '1');`
   );
   testQuery(
@@ -81,7 +81,7 @@ describe("select statements", () => {
     builder()
       .select("id", "username")
       .from("users")
-      .where(ops.eq("id", value(2))),
+      .where(ops.eq("id", rawValue(2))),
     `SELECT "id", "username" FROM "users" WHERE ("id" = '2');`
   );
 });

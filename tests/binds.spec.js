@@ -1,4 +1,5 @@
-import { builder, select, from, where, bind, ops } from "fragmentum";
+import { builder, select, from, where, bind, ops, value } from "fragmentum";
+import { testQuery } from "./util";
 
 describe("variable binds", () => {
   test("can bind variables", () => {
@@ -11,5 +12,13 @@ describe("variable binds", () => {
     expect(sql).toHaveProperty("query");
     expect(sql).toMatchSnapshot();
   });
-  test("value() will return a bound var with an anonymous key");
+  test("value() will return a bound var with an anonymous key", () => {
+    const sql = builder()
+      .select()
+      .from("users")
+      .where(ops.eq("id", value(3)))
+      .serialize();
+    expect(Object.keys(sql.binds).length).toBe(1);
+    expect(Object.values(sql.binds)[0]).toBe(3);
+  });
 });

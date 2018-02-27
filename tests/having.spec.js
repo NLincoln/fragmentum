@@ -1,11 +1,11 @@
-import { builder, having, agg, ops, bind, value } from "fragmentum";
+import { builder, having, agg, ops, bind, rawValue } from "fragmentum";
 import { testQuery } from "./util";
 
 describe("fragment: having", () => {
   testQuery(
     "complex having test",
     () =>
-      builder(having(ops.gt(agg.count(), value(2))))
+      builder(having(ops.gt(agg.count(), rawValue(2))))
         .having(ops.lt(agg.sum("salary"), bind("salary", 20000)))
         .select()
         .from("employees")

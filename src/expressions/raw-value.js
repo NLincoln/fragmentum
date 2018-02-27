@@ -12,4 +12,4 @@ export default class RawValue extends Expression {
   }
 }
 
-export const value = wrap(RawValue);
+export const rawValue = wrap(RawValue);
