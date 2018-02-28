@@ -19,6 +19,6 @@ describe("variable binds", () => {
       .where(ops.eq("id", value(3)))
       .serialize();
     expect(Object.keys(sql.binds).length).toBe(1);
-    expect(Object.values(sql.binds)[0]).toBe(3);
+    expect(sql.binds[Object.keys(sql.binds)[0]]).toBe(3);
   });
 });
