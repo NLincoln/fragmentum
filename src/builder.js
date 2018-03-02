@@ -142,6 +142,11 @@ Builder.prototype.select = builderFunc(select);
 Builder.prototype.where = builderFunc(where);
 Builder.prototype.from = builderFunc(from);
 Builder.prototype.join = builderFunc(join);
+Builder.prototype.joinInner = builderFunc(join.inner);
+Builder.prototype.joinLeft = builderFunc(join.left);
+Builder.prototype.joinRight = builderFunc(join.right);
+Builder.prototype.joinOuter = builderFunc(join.outer);
+
 Builder.prototype.limit = builderFunc(limit);
 Builder.prototype.offset = builderFunc(offset);
 Builder.prototype.orderBy = builderFunc(orderBy);

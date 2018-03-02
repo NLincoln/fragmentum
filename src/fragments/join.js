@@ -5,14 +5,15 @@ import quote from "../util/quote";
 import { serializeTable } from "./from";
 
 export default class JoinFragment extends Fragment {
-  constructor(table, lhs, rhs) {
+  constructor(type, table, lhs, rhs) {
     super();
+    this.type = type;
     this.table = table;
     this.lhs = lhs;
     this.rhs = rhs;
   }
   clone() {
-    return join(this.table, this.lhs, this.rhs);
+    return new JoinFragment(this.type, this.table, this.lhs, this.rhs);
   }
   serialize() {
     const table = serializeTable(this.table);
@@ -22,10 +23,14 @@ export default class JoinFragment extends Fragment {
     ).serialize();
 
     return {
-      query: `INNER JOIN ${table.query} ON ${on.query}`,
+      query: `${this.type} JOIN ${table.query} ON ${on.query}`,
       binds: on.binds.concat(table.binds)
     };
   }
 }
 
-export const join = wrap(JoinFragment);
+export const join = (...args) => new JoinFragment("INNER", ...args);
+join.inner = join;
+join.right = (...args) => new JoinFragment("RIGHT", ...args);
+join.left = (...args) => new JoinFragment("LEFT", ...args);
+join.outer = (...args) => new JoinFragment("OUTER", ...args);

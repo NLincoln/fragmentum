@@ -17,6 +17,16 @@ describe("join", () => {
       `INNER JOIN "groups" ON ("user"."group_id" = "group"."user_id")`
     );
     testQuery(
+      "different kinds of joins",
+      () =>
+        builder()
+          .joinRight("groups", "groups.id", "groups.id")
+          .joinLeft("groups", "groups.id", "groups.id")
+          .joinInner("groups", "groups.id", "groups.id")
+          .joinOuter("groups", "groups.id", "groups.id"),
+      `RIGHT JOIN "groups" ON ("groups"."id" = "groups"."id") LEFT JOIN "groups" ON ("groups"."id" = "groups"."id") INNER JOIN "groups" ON ("groups"."id" = "groups"."id") OUTER JOIN "groups" ON ("groups"."id" = "groups"."id")`
+    );
+    testQuery(
       "multiple joins",
       () =>
         builder()
