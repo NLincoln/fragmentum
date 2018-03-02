@@ -1,3 +1,12 @@
+const quoteType = sym => val => {
+  if (val.startsWith(sym)) {
+    return val;
+  }
+  return `${sym}${val.replace(sym, `\\${sym}`)}${sym}`;
+};
+const quoteSingle = quoteType(`'`);
+const quoteDouble = quoteType(`"`);
+
 /**
  *
  * @param {String} val
@@ -8,16 +17,10 @@ export default function quote(val, opts = {}) {
     return val;
   }
   if (opts.single) {
-    if (val.startsWith(`'`)) {
-      return val;
-    }
-    return `'${val.replace(`'`, `\\'`)}'`;
+    return quoteSingle(val);
   }
   if (opts.parens) {
     return `(${val})`;
   }
-  if (val.startsWith(`"`)) {
-    return val;
-  }
-  return `"${val.replace(`"`, `\\"`)}"`;
+  return quoteDouble(val);
 }
