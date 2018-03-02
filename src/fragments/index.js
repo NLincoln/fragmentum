@@ -7,3 +7,5 @@ export { limit, offset } from "./limit";
 export { orderBy } from "./order-by";
 export { groupBy } from "./group-by";
 export { having } from "./having";
+export { alias, softAlias } from "./subquery-alias";
+export { join } from "./join";

@@ -28,7 +28,8 @@ describe("join", () => {
       "join on a subquery",
       () =>
         builder().join(
-          builder("a")
+          builder()
+            .setAlias("a")
             .select()
             .from("users"),
           "a.user_id",

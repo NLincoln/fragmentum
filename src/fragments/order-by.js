@@ -7,6 +7,9 @@ export default class OrderByFragment extends Fragment {
     super();
     this.columns = columns;
   }
+  clone() {
+    return orderBy(...this.columns);
+  }
   serialize() {
     const query = this.columns
       .map(column => {

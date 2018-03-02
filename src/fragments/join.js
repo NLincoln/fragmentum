@@ -7,18 +7,23 @@ import { serializeTable } from "./from";
 export default class JoinFragment extends Fragment {
   constructor(table, lhs, rhs) {
     super();
-    this.table = serializeTable(table);
-    if (lhs instanceof BinaryExpression) {
-      this.on = lhs;
-    } else {
-      this.on = ops.eq(lhs, rhs);
-    }
-    this.on = this.on.serialize();
+    this.table = table;
+    this.lhs = lhs;
+    this.rhs = rhs;
+  }
+  clone() {
+    return join(this.table, this.lhs, this.rhs);
   }
   serialize() {
+    const table = serializeTable(this.table);
+    const on = (this.lhs instanceof BinaryExpression
+      ? this.lhs
+      : ops.eq(this.lhs, this.rhs)
+    ).serialize();
+
     return {
-      query: `INNER JOIN ${this.table.query} ON ${this.on.query}`,
-      binds: this.on.binds.concat(this.table.binds)
+      query: `INNER JOIN ${table.query} ON ${on.query}`,
+      binds: on.binds.concat(table.binds)
     };
   }
 }

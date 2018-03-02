@@ -1,4 +1,4 @@
-export default (val, opts = {}) => {
+export default function quote(val, opts = {}) {
   if (val === "*") {
     return val;
   }
@@ -9,4 +9,4 @@ export default (val, opts = {}) => {
     return `(${val})`;
   }
   return `"${val.replace(`"`, `\\"`)}"`;
-};
+}

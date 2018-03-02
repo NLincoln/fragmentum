@@ -40,6 +40,9 @@ export default class SelectFragment extends Fragment {
     super();
     this.columns = columns;
   }
+  clone() {
+    return select(...this.columns);
+  }
   serialize() {
     if (this.columns.length === 0) {
       return { query: "*", binds: [] };

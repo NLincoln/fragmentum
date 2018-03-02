@@ -6,7 +6,8 @@ describe("subqueries", () => {
     testQuery(
       "from a builder",
       builder().from(
-        builder("alias")
+        builder()
+          .setAlias("alias")
           .select()
           .from("users")
       ),
@@ -18,13 +19,15 @@ describe("subqueries", () => {
         from(
           from(
             "user",
-            builder("alias")
+            builder()
+              .setAlias("alias")
               .select()
               .from("users")
           )
         ),
         from(
-          builder("alias2", where(ops.eq("user.user_id", bind("userid", 2))))
+          builder(where(ops.eq("user.user_id", bind("userid", 2))))
+            .setAlias("alias2")
             .select()
             .from("groups")
         )
@@ -39,7 +42,7 @@ describe("subqueries", () => {
 
     testQuery(
       "from an incomplete fragment",
-      builder(from(builder("alias", select()))),
+      builder(from(builder(select()).setAlias("alias"))),
       `FROM (SELECT *) AS "alias"`
     );
 
@@ -49,7 +52,8 @@ describe("subqueries", () => {
         .select("alias.user_id")
         .from(
           from(
-            builder("alias", select())
+            builder(select())
+              .setAlias("alias")
               .from("users")
               .from("groups")
           )
@@ -79,4 +83,40 @@ describe("subqueries", () => {
       `SELECT * FROM "users" WHERE ("user_id" = (SELECT "user_id" FROM "users" WHERE ("group_id" = :user_id)));`
     );
   });
+  testQuery(
+    "passing in a default alias",
+    () =>
+      builder(
+        from(
+          builder()
+            .select()
+            .from("users")
+            .softAlias("defaultAlias")
+        ),
+        from(
+          builder()
+            .setAlias("setAlias")
+            .select()
+            .from("users")
+            .softAlias("otherDefaultAlias")
+        ),
+        from(
+          builder()
+            .from("users")
+            .softAlias("otherDefaultAlias")
+            .softAlias("defaultAlias")
+        )
+      ),
+    `FROM (SELECT * FROM "users") AS "defaultAlias", (SELECT * FROM "users") AS "setAlias", (FROM "users") AS "otherDefaultAlias"`
+  );
+  testQuery(
+    "not providing a name",
+    builder(
+      from(
+        builder()
+          .select()
+          .from("users")
+      )
+    )
+  );
 });

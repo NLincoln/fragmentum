@@ -7,6 +7,9 @@ export default class GroupByFragment extends Fragment {
     super();
     this.columns = columns;
   }
+  clone() {
+    return groupBy(...this.columns);
+  }
   serialize() {
     return {
       query: this.columns.map(columnQuote).join(", "),

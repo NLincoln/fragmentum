@@ -4,6 +4,9 @@ export default class WhereFragment extends Fragment {
     super();
     this.expr = expr;
   }
+  clone() {
+    return where(this.expr);
+  }
   serialize() {
     return this.expr && this.expr.serialize();
   }

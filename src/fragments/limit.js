@@ -2,10 +2,13 @@ import Fragment from "./fragment";
 import wrap from "../util/function-constructor";
 
 const createFragment = append =>
-  class extends Fragment {
+  class SimpleFragment extends Fragment {
     constructor(value) {
       super();
       this.value = value;
+    }
+    clone() {
+      return new SimpleFragment(this.value);
     }
     serialize() {
       let result = null;

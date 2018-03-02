@@ -7,6 +7,9 @@ export default class HavingFragment extends Fragment {
     super();
     this.exprs = exprs;
   }
+  clone() {
+    return having(...this.exprs);
+  }
   serialize() {
     return concatQueries(
       this.exprs.map(expr => {

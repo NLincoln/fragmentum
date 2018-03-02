@@ -25,6 +25,9 @@ export default class FromFragment extends Fragment {
     super();
     this.tables = tables;
   }
+  clone() {
+    return from(...this.tables);
+  }
   serialize() {
     return concatQueries(this.tables.map(serializeTable));
   }
