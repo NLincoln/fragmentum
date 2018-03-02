@@ -15,7 +15,9 @@ const binaryOps = {
   shiftLeft: Symbol(),
   shiftRight: Symbol(),
   in: Symbol(),
-  like: Symbol()
+  like: Symbol(),
+  notIn: Symbol(),
+  notLike: Symbol()
 };
 
 const associativeOps = {
@@ -74,7 +76,9 @@ export default class BinaryExpression extends Expression {
       [binaryOps.shiftLeft]: "<<",
       [binaryOps.shiftRight]: ">>",
       [binaryOps.in]: "IN",
-      [binaryOps.like]: "LIKE"
+      [binaryOps.like]: "LIKE",
+      [binaryOps.notIn]: "NOT IN",
+      [binaryOps.notLike]: "NOT LIKE"
     }[this.op];
     const lhs = serializeExpr(this.lhs);
     const rhs = serializeExpr(this.rhs);
@@ -132,6 +136,8 @@ export const ops = {
   lte: makeBinaryOp(binaryOps.lte),
   gt: makeBinaryOp(binaryOps.gt),
   gte: makeBinaryOp(binaryOps.gte),
+  in: makeBinaryOp(binaryOps.in),
+  like: makeBinaryOp(binaryOps.like),
 
   bit: {
     and: makeAssociativeOp(associativeOps.and),
@@ -143,7 +149,10 @@ export const ops = {
   add: makeAssociativeOp(associativeOps.add),
   sub: makeAssociativeOp(associativeOps.sub),
   div: makeAssociativeOp(associativeOps.div),
-  mult: makeAssociativeOp(associativeOps.mult),
-  in: makeBinaryOp(binaryOps.in),
-  like: makeBinaryOp(binaryOps.like)
+  mult: makeAssociativeOp(associativeOps.mult)
+};
+ops.not = {
+  in: makeBinaryOp(binaryOps.notIn),
+  like: makeBinaryOp(binaryOps.notLike),
+  eq: ops.ne
 };

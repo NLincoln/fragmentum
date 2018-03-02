@@ -50,13 +50,14 @@ describe("binary expressions", () => {
   associativeOpsTest(ops.bit.and, "&");
   associativeOpsTest(ops.bit.or, "|");
   associativeOpsTest(ops.bit.xor, "#");
-  test("NOT !");
-  test("like");
   describe("like", () => {
     testQuery(
       "basic test",
-      () => builder().where(ops.like("id", rawValue("%foo"))),
-      `WHERE ("id" LIKE '%foo')`
+      () =>
+        builder()
+          .where(ops.like("id", rawValue("%foo")))
+          .where(ops.not.like("id", rawValue("%foo"))),
+      `WHERE ("id" LIKE '%foo') AND ("id" NOT LIKE '%foo')`
     );
   });
   describe("in", () => {
@@ -67,8 +68,11 @@ describe("binary expressions", () => {
     );
     testQuery(
       "passing in an array of rawValues",
-      () => builder().where(ops.in("id", [1, 2, 3].map(rawValue))),
-      `WHERE ("id" IN ('1', '2', '3'))`
+      () =>
+        builder()
+          .where(ops.in("id", [1, 2, 3].map(rawValue)))
+          .where(ops.not.in("id", [1, 2, 3].map(rawValue))),
+      `WHERE ("id" IN ('1', '2', '3')) AND ("id" NOT IN ('1', '2', '3'))`
     );
     testQuery(
       "passing in a bind expression",

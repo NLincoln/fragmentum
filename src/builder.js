@@ -112,7 +112,7 @@ export class Builder {
     let fragments = [
       this.serializeFragment(SelectFragment, "SELECT"),
       this.serializeFragment(FromFragment, "FROM"),
-      this.serializeFragment(WhereFragment, "WHERE"),
+      this.serializeFragment(WhereFragment, "WHERE", " AND "),
       this.serializeFragment(JoinFragment, null, " "),
       this.serializeFragment(GroupByFragment, "GROUP BY", ", "),
       this.serializeFragment(HavingFragment, "HAVING", " AND "),
