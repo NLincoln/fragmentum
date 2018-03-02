@@ -72,7 +72,6 @@ describe("subqueries", () => {
             ops.eq(
               "user_id",
               builder(
-                "alias",
                 select("user_id"),
                 from("users"),
                 where(ops.eq("group_id", bind("user_id", 2)))

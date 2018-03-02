@@ -52,6 +52,13 @@ describe("binary expressions", () => {
   associativeOpsTest(ops.bit.xor, "#");
   test("NOT !");
   test("like");
+  describe("like", () => {
+    testQuery(
+      "basic test",
+      () => builder().where(ops.like("id", rawValue("%foo"))),
+      `WHERE ("id" LIKE '%foo')`
+    );
+  });
   describe("in", () => {
     testQuery(
       "passing a subquery",

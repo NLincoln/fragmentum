@@ -14,7 +14,8 @@ const binaryOps = {
   gte: Symbol(),
   shiftLeft: Symbol(),
   shiftRight: Symbol(),
-  in: Symbol()
+  in: Symbol(),
+  like: Symbol()
 };
 
 const associativeOps = {
@@ -72,7 +73,8 @@ export default class BinaryExpression extends Expression {
       [binaryOps.gte]: ">=",
       [binaryOps.shiftLeft]: "<<",
       [binaryOps.shiftRight]: ">>",
-      [binaryOps.in]: "IN"
+      [binaryOps.in]: "IN",
+      [binaryOps.like]: "LIKE"
     }[this.op];
     const lhs = serializeExpr(this.lhs);
     const rhs = serializeExpr(this.rhs);
@@ -142,5 +144,6 @@ export const ops = {
   sub: makeAssociativeOp(associativeOps.sub),
   div: makeAssociativeOp(associativeOps.div),
   mult: makeAssociativeOp(associativeOps.mult),
-  in: makeBinaryOp(binaryOps.in)
+  in: makeBinaryOp(binaryOps.in),
+  like: makeBinaryOp(binaryOps.like)
 };
