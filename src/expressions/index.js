@@ -7,3 +7,4 @@ export { agg } from "./aggregates";
 export { value } from "./value";
 export { raw } from "./raw";
 export { func } from "./func";
+export { cast } from "./cast";
