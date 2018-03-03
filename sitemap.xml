@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url> <loc>https://nlincoln.github.io/help.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/en/help.html" /> </url>
+<url> <loc>https://nlincoln.github.io/index.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/en/index.html" /> </url>
+<url> <loc>https://nlincoln.github.io/users.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/en/users.html" /> </url>
+<url> <loc>https://nlincoln.github.io/blog/2017/10/24/new-version-1.0.0.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
+<url> <loc>https://nlincoln.github.io/blog/2017/09/26/adding-rss.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
+<url> <loc>https://nlincoln.github.io/blog/2017/09/25/testing-rss.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
+<url> <loc>https://nlincoln.github.io/blog/2017/04/10/blog-post-two.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
+<url> <loc>https://nlincoln.github.io/blog/2016/03/11/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
+<url> <loc>https://nlincoln.github.io/docs/api-reference.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/api-reference.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/authorization.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/authorization.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/conditional-fragments.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/conditional-fragments.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/embedding.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/embedding.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/immutability.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/immutability.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/installation.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/installation.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/overridable-fragments.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/overridable-fragments.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/pagination.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/pagination.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/select-statements.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/select-statements.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/sql-from-qp.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/sql-from-qp.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/subqueries.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/subqueries.html" /> </url>
+<url> <loc>https://nlincoln.github.io/docs/what-are-fragments.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://nlincoln.github.io/docs/what-are-fragments.html" /> </url>
+</urlset>
