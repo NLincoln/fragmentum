@@ -5,7 +5,7 @@ sidebar_label: What Are Fragments?
 ---
 
 A _Fragment_ is a single piece of a SQL query, such as a SELECT statement, WHERE clause, or a JOIN clause.
-It represebts a single part of a SQL query that could be omitted from the query, and still be (syntactically) valid.
+It represents a single part of a SQL query that could be omitted from the query, and still be (syntactically) valid.
 
 For example:
 
