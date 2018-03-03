@@ -38,3 +38,29 @@ const { query } = builder(
 3. Providing them as an argument to `Builder#concat`
 
 You'll usually be using methods 1 and 2, although method 3 100% fine as well.
+
+# What is a Builder?
+Builders take in fragments and produce syntactically-valid SQL queries.
+
+Optionally, builders can take in other builders. While the following may be a bit strange, builders composing from builders
+is a common operation in fragmentum. It usually arises from a function returning a builder that is then used in another builder.
+For example:
+
+```js
+const { builder, select } = require('fragmentum');
+
+const getUserNameColumns = () => builder(select('username', 'firstname'));
+const getUserGroup = () => builder(select('group'));
+builder(
+  getUserNameColumns(),
+  getUserGroup()
+);
+// SELECT "username", "firstname", "group"
+```
+
+# What are Expressions?
+An expression is similar to a fragment, aside from one major difference: expressions cannot be given to a Builder to
+create a SQL query. A builder wouldn't have any idea what to do with it. If you think you need to provide an expression to
+a builder, e.g. to serialize it, go check out [embedding](embedding.md).
+
+We'll take a closer look at expressions in [Basic Query Building](select-statements.md)
