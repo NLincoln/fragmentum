@@ -2,7 +2,7 @@ import Fragment from "./fragment";
 import BinaryExpression, { ops } from "../expressions/binary-expression";
 import wrap from "../util/function-constructor";
 import quote from "../util/quote";
-import { serializeTable } from "./from";
+import { serializeMaybeExpression } from "../util/serializeExpression";
 
 export default class JoinFragment extends Fragment {
   constructor(type, table, lhs, rhs) {
@@ -16,7 +16,7 @@ export default class JoinFragment extends Fragment {
     return new JoinFragment(this.type, this.table, this.lhs, this.rhs);
   }
   serialize() {
-    const table = serializeTable(this.table);
+    const table = serializeMaybeExpression(this.table);
     const on = (this.lhs instanceof BinaryExpression
       ? this.lhs
       : ops.eq(this.lhs, this.rhs)

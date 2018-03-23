@@ -119,4 +119,18 @@ describe("window functions", () => {
       ),
     `SELECT COUNT(*) OVER (PARTITION BY "group" ORDER BY "username" ASC)`
   );
+  testQuery(
+    "selecting a subquery with an alias",
+    () =>
+      builder(
+        select(
+          builder()
+            .setAlias("alias")
+            .select("id")
+            .from("users")
+            .where(ops.eq("id", rawValue("2")))
+        )
+      ),
+    `SELECT (SELECT "id" FROM "users" WHERE ("id" = '2')) AS "alias"`
+  );
 });

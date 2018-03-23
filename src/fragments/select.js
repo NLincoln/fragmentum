@@ -1,39 +1,11 @@
 import Fragment from "./fragment";
+import { Builder } from "../builder";
 import quote from "../util/quote";
 import columnQuote from "../util/column-quote";
 import Expression from "../expressions/expression";
 import wrap from "../util/function-constructor";
 import { concatQueries } from "../util/concat-queries";
-
-const serializePair = ([key, alias]) => {
-  if (key && alias) {
-    return `${columnQuote(key)} AS ${quote(alias)}`;
-  }
-  return null;
-};
-
-const serializeObject = column =>
-  Object.keys(column)
-    .map(key => serializePair([key, column[key]]))
-    .join(", ");
-
-const serializeColumn = column => {
-  if (Array.isArray(column)) {
-    return serializePair(column);
-  } else if (typeof column === "object") {
-    return serializeObject(column);
-  }
-  return columnQuote(column);
-};
-export const serializeMaybeExpression = serializeColumn => column => {
-  if (column instanceof Expression) {
-    return column.serialize();
-  }
-  return {
-    query: serializeColumn(column),
-    binds: []
-  };
-};
+import { serializeMaybeExpression } from "../util/serializeExpression";
 
 export default class SelectFragment extends Fragment {
   constructor(...columns) {
@@ -47,9 +19,7 @@ export default class SelectFragment extends Fragment {
     if (this.columns.length === 0) {
       return { query: "*", binds: [] };
     }
-    return concatQueries(
-      this.columns.map(serializeMaybeExpression(serializeColumn))
-    );
+    return concatQueries(this.columns.map(serializeMaybeExpression));
   }
 }
 export const select = wrap(SelectFragment);
