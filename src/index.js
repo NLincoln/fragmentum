@@ -5,10 +5,6 @@ function getFragmentMethods(fragment) {
   return fragment[FRAG];
 }
 
-function isFragment(fragment) {
-  return Boolean(getFragmentMethods(fragment));
-}
-
 function createFragment(methods) {
   function fragmentThunk(args) {
     let nextFragment = createFragment({
@@ -50,9 +46,6 @@ export function from(...tables) {
     serialize(args) {
       return `FROM ${tables
         .map(table => {
-          if (isFragment(table)) {
-            table = getFragmentMethods(table).serialize(args);
-          }
           if (table[ARGUMENT]) {
             table = serializeArgument(args, table);
           }
