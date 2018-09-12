@@ -78,7 +78,7 @@ called, and we escape the ID. We then execute that fragment, and get the regular
 
 app.get(<span class="hljs-string">"/user/:id"</span>, <span class="hljs-keyword">async</span> req =&gt; {
   <span class="hljs-keyword">let</span> { query, binds } = execute(getUserById({ <span class="hljs-attr">id</span>: req.params.id }));
-  <span class="hljs-keyword">let</span> user = <span class="hljs-keyword">await</span> someSQLLibraryLikeKnex.query(query, {
+  <span class="hljs-keyword">let</span> user = <span class="hljs-keyword">await</span> someSQLLibraryThatExecutesQueryStrings.query(query, {
     binds
   });
   <span class="hljs-keyword">return</span> user;
