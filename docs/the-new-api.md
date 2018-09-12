@@ -92,7 +92,7 @@ let getUserById = fragment(
 
 app.get("/user/:id", async req => {
   let { query, binds } = execute(getUserById({ id: req.params.id }));
-  let user = await someSQLLibraryLikeKnex.query(query, {
+  let user = await someSQLLibraryThatExecutesQueryStrings.query(query, {
     binds
   });
   return user;
