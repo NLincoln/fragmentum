@@ -1,4 +1,5 @@
-const { fragment, select, from, execute, arg } = require("fragmentum");
+import { fragment, select, from, execute, arg } from "fragmentum";
+const table = from(arg("table"));
 
 test("a simple select statement", () => {
   let getUsers = fragment(select("*"), from("users"));
@@ -10,7 +11,7 @@ test("a simple select statement", () => {
 });
 
 test("a simple arg", () => {
-  let getTable = fragment(select("*"), from(arg("table")));
+  let getTable = fragment(select("*"), table);
   let { query, binds } = execute(
     getTable({
       table: "users"
@@ -20,8 +21,22 @@ test("a simple arg", () => {
   expect(binds).toEqual({});
 });
 
+test("two args", () => {
+  let getTable = from(arg("table-a"));
+  let getTableB = from(arg("table-b"));
+  let frag = fragment(getTable, getTableB);
+  let { query } = execute(
+    frag({
+      "table-b": "other_users"
+    })({
+      "table-a": "users"
+    })
+  );
+  expect(query).toEqual("FROM `users` FROM `other_users`");
+});
+
 test("egregiously wrapping in fragment()", () => {
-  let getTable = fragment(select("*"), from(arg("table")));
+  let getTable = fragment(select("*"), table);
   getTable = fragment(fragment(fragment(fragment(getTable))));
   getTable = fragment(
     fragment(
@@ -37,8 +52,7 @@ test("egregiously wrapping in fragment()", () => {
 });
 
 test("multiple levels of args", () => {
-  let getTable = fragment(from(arg("table")));
-  let getUser = getTable({
+  let getUser = table({
     table: arg("other-table")
   });
 

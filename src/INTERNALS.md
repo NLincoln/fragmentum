@@ -36,7 +36,7 @@ interface Argument {
 }
 ```
 
-### `CURRENT_ARGS` & the details of `.serialize()`
+### the details of `.serialize()`
 
 Any arguments that were applied to create this fragment. These only exist on the level that the args were applied on.
 
@@ -73,11 +73,9 @@ wrappedFragment.serialize();
 
 // Expanding to:
 
-userFragment.serialize({
-  table: 'users'
-});
+userFragment.serialize();
 
-// Notice how we add the args at this layer. We will come back to that after this code snippet
+// Now, finally, we apply the args
 
 baseFragment.serialize({
   table: 'users'
@@ -97,27 +95,4 @@ from(arg('table')).serialize({
   query: 'FROM `users`',
   binds: {}
 }
-```
-
-ALRIGHT HOLD UP FAM THIS IS IMPORTANT
-
-notice how the arguments were supplied _to_ `userFragment.serialize()`, instead of
-expanding another level and having `userFragment` supply the args to `baseFragment`,
-the _arguments are provided to userFragment_.
-
-This seems counterintuitive, but it doesn't matter in practice (hence why this is in an internals doc instead of api docs)
-The reason for this is because when you're creating a new fragment by supplying args, you can't _add_ any new args.
-
-What I mean by this is that adding a new `arg()` and also supplying the value of that `arg` in a single step is
-impossible. You might think of something like:
-
-```js
-fragment(arg("foo"))({ foo: "bar" });
-```
-
-But that's just two steps, disguised as one:
-
-```js
-let _foo = fragment(arg("foo"));
-_foo({ foo: "bar" });
 ```
