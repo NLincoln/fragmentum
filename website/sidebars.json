@@ -1,34 +1,6 @@
 {
   "docs": {
-    "A CHALLENGER APPEARS": [
-      "the-new-api"
-    ],
-    "Getting Started": [
-      "installation"
-    ],
-    "Introduction": [
-      "what-are-fragments",
-      "immutability"
-    ],
-    "Writing Queries": [
-      "select-statements",
-      "conditional-fragments",
-      "subqueries",
-      "embedding"
-    ],
-    "Thinking In Fragments": [
-      "pagination",
-      "authorization",
-      "sql-from-qp"
-    ],
-    "Advanced": [
-      "overridable-fragments"
-    ]
-  },
-  "docs-other": {
-    "First Category": [
-      "doc4",
-      "doc5"
-    ]
+    "A CHALLENGER APPEARS": ["the-new-api"],
+    "Getting Started": ["installation"]
   }
 }

@@ -12,8 +12,6 @@
     "Conditional Fragments": "Conditional Fragments",
     "embedding": "Embedding in existing SQL",
     "Embedding in existing SQL": "Embedding in existing SQL",
-    "immutability": "Immutability",
-    "Immutability": "Immutability",
     "installation": "Installation",
     "Installation": "Installation",
     "overridable-fragments": "Overridable Fragments",
@@ -35,12 +33,7 @@
     "Help": "Help",
     "Blog": "Blog",
     "A CHALLENGER APPEARS": "A CHALLENGER APPEARS",
-    "Getting Started": "Getting Started",
-    "Introduction": "Introduction",
-    "Writing Queries": "Writing Queries",
-    "Thinking In Fragments": "Thinking In Fragments",
-    "Advanced": "Advanced",
-    "First Category": "First Category"
+    "Getting Started": "Getting Started"
   },
   "pages-strings": {
     "Help Translate|recruit community translators for your project": "Help Translate",
