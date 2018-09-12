@@ -1,0 +1,76 @@
+<html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>New Stuff · Fragmentum</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="New Stuff · Fragmentum"/><meta property="og:type" content="website"/><meta property="og:url" content="https://nlincoln.github.io//fragmentum/index.html"/><meta property="og:description" content="Old Fragmentum was great, but it tried too much to be like &quot;traditional&quot; query builders. However, after taking a step back for awhile, "/><link rel="shortcut icon" href="/fragmentum/null"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://nlincoln.github.io//blog/atom.xml" title="Fragmentum Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://nlincoln.github.io//blog/feed.xml" title="Fragmentum Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/fragmentum/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fragmentum/"><h2 class="headerTitle">Fragmentum</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/fragmentum/docs/installation.html" target="_self">Docs</a></li><li><a href="/fragmentum/docs/api-reference.html" target="_self">API</a></li><li><a href="/fragmentum/en/help.html" target="_self">Help</a></li><li><a href="/fragmentum/blog" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>A CHALLENGER APPEARS</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>A CHALLENGER APPEARS</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/fragmentum/docs/the-new-api.html">The New API</a></li></ul></div><div class="navGroup navGroupActive"><h3>Getting Started</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/installation.html">Installation</a></li></ul></div><div class="navGroup navGroupActive"><h3>Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/what-are-fragments.html">What Are Fragments?</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/immutability.html">Immutability</a></li></ul></div><div class="navGroup navGroupActive"><h3>Writing Queries</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/select-statements.html">Query Building</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/conditional-fragments.html">Conditional Fragments</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/subqueries.html">Subqueries</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/embedding.html">Embedding in existing SQL</a></li></ul></div><div class="navGroup navGroupActive"><h3>Thinking In Fragments</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/pagination.html">Pagination</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/authorization.html">Writing Authorization Logic</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/sql-from-qp.html">REST api example</a></li></ul></div><div class="navGroup navGroupActive"><h3>Advanced</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/overridable-fragments.html">Overridable Fragments</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>New Stuff</h1></header><article><div><span><p>Old Fragmentum was great, but it tried too much to be like &quot;traditional&quot; query builders. However, after taking a step back for awhile,
+I have some ideas.</p>
+<p>Let's look at what defining a fragment looks like now:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> getById = where(ops.eq(arg(<span class="hljs-string">'primaryKey'</span>), arg(<span class="hljs-string">'id'</span>)))
+<span class="hljs-comment">// OR</span>
+<span class="hljs-keyword">let</span> getById = fragment(
+  where(ops.eq(arg(<span class="hljs-string">'primaryKey'</span>), arg(<span class="hljs-string">'id'</span>)))
+)
+</code></pre>
+<p>Looks pretty similar to the old api, right? Except it's completely different.
+Instead of being a &quot;fragment&quot; object, <code>getById</code> is a <em>function</em>. It accepts a hash
+of arguments, each value in the hash corresponding to one of the <code>arg()</code>s</p>
+<p>So we can do something like the following:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> getUserById = fragment(
+  select(),
+  <span class="hljs-keyword">from</span>(<span class="hljs-string">'users'</span>),
+  getById({
+    <span class="hljs-attr">primaryKey</span>: <span class="hljs-string">'user_id'</span>,
+  })
+)
+</code></pre>
+<p>but this isn't executable yet. For that, you have to do something like</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> { query, binds } = execute(getUserById({
+  <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>
+}))
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="ok-but-why-all-the-function-calling"></a><a href="#ok-but-why-all-the-function-calling" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Ok but why all the function calling?</h3>
+<p>Think of fragments as curried functions with certain arguments. The details of how the query is implemented is opaque to the caller, and
+the user of the fragment can fill in values as much as they like.</p>
+<h3><a class="anchor" aria-hidden="true" name="what-does-this-enable"></a><a href="#what-does-this-enable" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>What does this enable?</h3>
+<p>Let's find out! Let's build a lightweight ORM using these principles:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> Model = <span class="hljs-function">(<span class="hljs-params">{ table, primaryKey = <span class="hljs-string">'id'</span> }</span>) =&gt;</span> ({
+  <span class="hljs-attr">getById</span>: fragment(
+    getById({
+      <span class="hljs-attr">primaryKey</span>: column(table, primaryKey),
+    }),
+    <span class="hljs-keyword">from</span>(table)
+  ),
+  <span class="hljs-attr">query</span>: <span class="hljs-keyword">from</span>(table)
+})
+</code></pre>
+<p>Now let's create a model with this simple ORM</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> User = Model({
+  <span class="hljs-attr">table</span>: <span class="hljs-string">'users'</span>,
+});
+</code></pre>
+<p>And finally, let's actually run a query using this model:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> user123Query = execute(fragment(
+  select(<span class="hljs-string">'*'</span>), <span class="hljs-comment">// If we're doing a SELECT *, this can just be select()</span>
+  User.getById({ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span> })
+);
+</code></pre>
+<p>It looks a little annoying. Why can't we just call <code>User.getById</code>? We could, except we avoided setting any columns during the
+model definition. That means we still have to specify what columns we want.</p>
+<p>Still not feeling comfortable? I get it. It can be pretty weird. Let's try wrapping it up:</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> getCompleteRecord = fragment(
+  select(),
+  arg(<span class="hljs-string">'model'</span>, (model) =&gt; model.getById)
+)
+</code></pre>
+<p>Hold up. What's that function doing with <code>arg</code>? That's the <em>transducer</em> argument. When the argument <code>model</code> is received, we call that function, and use the result of it as the <em>real</em> value of the arg under the hood.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> user123Query = execute(getCompleteRecord({
+  <span class="hljs-attr">model</span>: User,
+  <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>
+}));
+</code></pre>
+<p>Look better?</p>
+<p>So what do you think? I'd really appreciate any feedback anyone has. I haven't started implementing this API at all yet, but I definitely think it's possible.</p>
+<p>If you want to leave feedback on it (PLEASE DO), DM me on <a href="https://twitter.com/lincolnnathan21">twitter</a>, or email me at <a href="mailto:nate.school42@gmail.com">nate.school42@gmail.com</a></p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="installation.html">Installation →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/fragmentum/" class="nav-home"></a><div><h5>Docs</h5><a href="/fragmentum/docs/en/doc1.html">Getting Started (or other categories)</a><a href="/fragmentum/docs/en/doc2.html">Guides (or other categories)</a><a href="/fragmentum/docs/en/doc3.html">API Reference (or other categories)</a></div><div><h5>Community</h5><a href="https://twitter.com/" target="_blank">Twitter</a><a href="https://github.com/NLincoln/fragmentum" target="_blank">GitHub</a></div><div><h5>More</h5><a href="/fragmentum/blog">Blog</a><a href="https://github.com/NLincoln/fragmentum">GitHub</a><a class="github-button" href="https://github.com/NLincoln/fragmentum" data-icon="octicon-star" data-count-href="/NLincoln/fragmentum/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2018 Nathan Lincoln</section></footer></div></body></html>
