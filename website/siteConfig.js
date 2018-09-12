@@ -6,7 +6,6 @@ const siteConfig = {
   tagline: "A next-generation query builder for node.js",
   url: "https://nlincoln.github.io/" /* your website url */,
   baseUrl: "/fragmentum/" /* base url for your project */,
-  projectName: "fragmentum",
   headerLinks: [
     { doc: "installation", label: "Docs" },
     { doc: "api-reference", label: "API" },
