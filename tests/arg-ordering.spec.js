@@ -1,7 +1,7 @@
 import { fragment, execute, arg } from "fragmentum";
 const table = fragment(arg("table"));
 
-test.only("value provided immediately", () => {
+test("value provided immediately", () => {
   let getUsers = fragment(table({ table: "users" }));
 
   let { query, binds } = execute(getUsers);

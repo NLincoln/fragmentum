@@ -96,3 +96,56 @@ from(arg('table')).serialize({
   binds: {}
 }
 ```
+
+# Dealing with multiple select() statements
+
+So basically, I want to write the following:
+
+```js
+fragment(select("user_id"), fragment(select("username")));
+```
+
+And have all of that "just work"
+
+But as it turns out that's pretty difficult with the current architecture, so I'm trying to figure some stuff out.
+
+So right now we zig-zag all around the tree of data. I'm considering making a two-pass system or something. The JS above
+constructs a "lightweight" representation of the query tree. This pass is all about resolving the arguments, to the degree that
+the returned value from this pass will have all values properly resolved.
+
+After sleeping on it, I'm fully convinced of the 2-pass system. First pass has each fragment return a lightweight representation of
+what they need, including how to "really" serialize themselves. The first pass also resolves all _arg_ clauses.
+
+Pass 2 goes through the entire tree of fragments, and serializes them all into a string.
+
+### 2-pass implementation
+
+I'm considering making the first pass just grabbing every fragments `FRAG` symbol... but I worry that we'll lose closure data that
+way. Let's back up then. What would the interface look like?
+
+```js
+interface Repr {
+  type: symbol;
+  wrap?: (x: string) => string;
+  combine?: (xs: string[]) => string;
+  // Can attach any other info onto this, above stuff is just for
+  //  the parent executor to understand.
+  [x: string]: any;
+}
+
+createFragment({
+  type: types.select,
+  // repr in this case means "some lightweight representation"
+  repr: (args: ArgsMap) => Repr
+
+  serialize: (repr) => {
+    // returns a { query, binds } tuple, argument is whatever is returned from resolve()
+  }
+});
+```
+
+In theory this architecture should allow us to handle situations like the following:
+
+```js
+fragment(select("user_id"), fragment(select("username")));
+```
