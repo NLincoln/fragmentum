@@ -10,11 +10,16 @@ function escapeColumn(column) {
 
 export function select(...columns) {
   return createFragment({
-    type: types.select,
-    wrap: columns => `SELECT ` + columns,
-    combine: columnsets => columnsets.join(", "),
-    serialize(args) {
-      return columns.map(escapeColumn).join(", ");
+    repr: args => {
+      return {
+        type: types.select,
+        columns,
+        wrap: columns => `SELECT ` + columns,
+        combine: columnsets => columnsets.join(", "),
+        serialize() {
+          return columns.map(escapeColumn).join(", ");
+        }
+      };
     }
   });
 }
