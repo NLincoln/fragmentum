@@ -1,12 +1,10 @@
 import { createFragment } from "./fragment";
-import { types } from "./fragmentTypes";
 import { serializeArgument, isArgument } from "./arg";
 import { orderings } from "./ordering";
 
 export function from(...tables) {
   return createFragment(args => {
     return {
-      type: types.from,
       ordering: orderings.from,
       wrap: tables => `FROM ${tables}`,
       combine: tables => tables.join(", "),

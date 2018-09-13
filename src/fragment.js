@@ -1,11 +1,15 @@
 import groupBy from "./lib/groupBy";
-import { types } from "./fragmentTypes";
 import { isArgument, serializeArgument } from "./arg";
 const FRAG = Symbol("fragmentum-internal");
 
 function getFragmentMethods(fragment) {
   return fragment[FRAG];
 }
+
+const types = {
+  fragment: Symbol("fragment"),
+  resolvedArg: Symbol("resolved-arg")
+};
 
 export function createFragment(createRepr) {
   function fragmentThunk(args) {
