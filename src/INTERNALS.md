@@ -128,19 +128,17 @@ interface Repr {
   type: symbol;
   wrap?: (x: string) => string;
   combine?: (xs: string[]) => string;
+  serialize: (repr: Repr) => {
+
+  }
   // Can attach any other info onto this, above stuff is just for
   //  the parent executor to understand.
   [x: string]: any;
 }
 
 createFragment({
-  type: types.select,
   // repr in this case means "some lightweight representation"
   repr: (args: ArgsMap) => Repr
-
-  serialize: (repr) => {
-    // returns a { query, binds } tuple, argument is whatever is returned from resolve()
-  }
 });
 ```
 
@@ -149,3 +147,17 @@ In theory this architecture should allow us to handle situations like the follow
 ```js
 fragment(select("user_id"), fragment(select("username")));
 ```
+
+### The "ordering" concept
+
+What in the world is an ordering? Well, one thing I want is for the fragmentum syntax to be extendable, and to expose `createFragment`
+as public API that people can use to create their own fragment types. This way, most of the work of creating the query builder could
+be moved outside of fragmentums realm of influence, and be moved into the land of public API
+
+tl;dr: fragmentum's only api would become `createFragment`, `fragment`, and `arg`. Everything else would be written with those
+3 api's.
+
+Anyways, onto what an ordering is. It's an addition onto `Repr` that defines where the fragment should go in the query.
+It's really just an integer that defines the ordering.
+
+The order numbers, while not exposed to the user, should be considered public API.

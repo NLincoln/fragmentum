@@ -8,9 +8,6 @@ export function createFragment(methods) {
           ...parentArgs,
           ...args
         });
-      },
-      serialize(repr) {
-        return methods.serialize(repr);
       }
     });
     return nextFragment;

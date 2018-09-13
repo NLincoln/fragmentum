@@ -1,9 +1,11 @@
 import { createFragment, FRAG } from "./createFragment";
 import { types } from "./fragmentTypes";
+import { arg, serializeArgument, isArgument } from "./arg";
+import groupBy from "./lib/groupBy";
 
-const ARGUMENT = Symbol("fragmentum-argument");
-export { createFragment };
 export { select } from "./select";
+export { from } from "./from";
+export { createFragment, arg };
 
 function getFragmentMethods(fragment) {
   return fragment[FRAG];
@@ -17,7 +19,7 @@ export function fragment(...children) {
         serialize(repr) {
           /**
            * At this point we have the tree of fully resolved args. Effectively,
-           * we now have a "tree" of children. It's our job now to lift those children up into our current fragment.
+           * we now have a "tree" of children. It's our job now to lift those childgren up into our current fragment.
            * We do this nice and recursively.
            */
           const lift = node => {
@@ -42,44 +44,44 @@ export function fragment(...children) {
           if (args.length > 0) {
             return args.map(arg => arg.value).join(" ");
           }
-          let serializedChildren = resolvedChildren.map(child => {
-            return child.serialize();
-          });
+          let groupedChildren = groupBy(
+            resolvedChildren,
+            child => child.ordering
+          );
 
-          return resolvedChildren[0].wrap(
-            resolvedChildren[0].combine(serializedChildren)
+          let sortedChildren = Array.from(groupedChildren)
+            /**
+             * Properly sort the children by their ordering
+             */
+            .sort((a, b) => {
+              return a[0].ordering - b[0].ordering;
+            })
+            /**
+             * Since the lowest-ordering comes first, reverse the result (the func above does highest-first)
+             */
+            .reverse();
+
+          return (
+            sortedChildren
+              .map(group => {
+                let serialized = group.map(child => child.serialize(child));
+                return group[0].wrap(group[0].combine(serialized));
+              })
+              /**
+               * Groups of fragments are separated by spaces.
+               */
+              .join(" ")
           );
         },
 
         children: children.map(child => {
-          if (child[ARGUMENT]) {
+          if (isArgument(child)) {
             return {
               type: types.resolvedArg,
               value: serializeArgument(args, child)
             };
           }
           return getFragmentMethods(child).repr(args);
-        })
-      };
-    }
-  });
-}
-
-export function from(...tables) {
-  return createFragment({
-    repr: args => {
-      return {
-        type: types.from,
-        wrap: tables => `FROM ${tables}`,
-        combine: tables => tables.join(", "),
-        serialize(repr) {
-          return repr.tables.map(table => `\`${table}\``).join(", ");
-        },
-        tables: tables.map(table => {
-          if (table[ARGUMENT]) {
-            return serializeArgument(args, table);
-          }
-          return table;
         })
       };
     }
@@ -93,20 +95,5 @@ export function execute(fragment) {
   return {
     query: repr.serialize(repr),
     binds: {}
-  };
-}
-
-function serializeArgument(args, argObj) {
-  while (argObj[ARGUMENT]) {
-    argObj = argObj.transducer(args[argObj.name]);
-  }
-  return argObj;
-}
-
-export function arg(name, transducer = val => val) {
-  return {
-    [ARGUMENT]: true,
-    name,
-    transducer
   };
 }
