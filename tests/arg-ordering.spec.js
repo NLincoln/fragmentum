@@ -1,29 +1,29 @@
-import { fragment, select, from, execute, arg } from "fragmentum";
-const table = from(arg("table"));
+import { fragment, execute, arg } from "fragmentum";
+const table = fragment(arg("table"));
 
-test("a simple select statement", () => {
-  let getUsers = fragment(select("*"), from("users"));
+test.only("value provided immediately", () => {
+  let getUsers = fragment(table({ table: "users" }));
 
   let { query, binds } = execute(getUsers);
 
-  expect(query).toBe("SELECT * FROM `users`");
+  expect(query).toBe("users");
   expect(binds).toEqual({});
 });
 
-test("a simple arg", () => {
-  let getTable = fragment(select("*"), table);
+test("wrapped in a fragment first", () => {
+  let getTable = fragment(table);
   let { query, binds } = execute(
     getTable({
       table: "users"
     })
   );
-  expect(query).toBe("SELECT * FROM `users`");
+  expect(query).toBe("users");
   expect(binds).toEqual({});
 });
 
 test("two args", () => {
-  let getTable = from(arg("table-a"));
-  let getTableB = from(arg("table-b"));
+  let getTable = fragment(arg("table-a"));
+  let getTableB = fragment(arg("table-b"));
   let frag = fragment(getTable, getTableB);
   let { query } = execute(
     frag({
@@ -32,11 +32,11 @@ test("two args", () => {
       "table-a": "users"
     })
   );
-  expect(query).toEqual("FROM `users` FROM `other_users`");
+  expect(query).toEqual("users other_users");
 });
 
 test("egregiously wrapping in fragment()", () => {
-  let getTable = fragment(select("*"), table);
+  let getTable = fragment(table);
   getTable = fragment(fragment(fragment(fragment(getTable))));
   getTable = fragment(
     fragment(
@@ -48,7 +48,7 @@ test("egregiously wrapping in fragment()", () => {
     )
   );
   let { query } = execute(getTable);
-  expect(query).toBe("SELECT * FROM `users`");
+  expect(query).toBe("users");
 });
 
 test("multiple levels of args", () => {
@@ -56,12 +56,12 @@ test("multiple levels of args", () => {
     table: arg("other-table")
   });
 
-  let getAll = fragment(select("*"), getUser);
+  let getAll = fragment(getUser);
   let { query } = execute(
     getAll({
       "other-table": "users",
       table: "not_users"
     })
   );
-  expect(query).toBe("SELECT * FROM `users`");
+  expect(query).toBe("users");
 });

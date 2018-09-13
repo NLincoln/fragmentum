@@ -1,42 +1,25 @@
-const FRAG = Symbol("fragmentum-internal");
+import { createFragment, FRAG } from "./createFragment";
+
 const ARGUMENT = Symbol("fragmentum-argument");
+export { createFragment };
+export { select } from "./select";
 
 function getFragmentMethods(fragment) {
   return fragment[FRAG];
-}
-
-function createFragment(methods) {
-  function fragmentThunk(args) {
-    let nextFragment = createFragment({
-      serialize(parentArgs) {
-        return methods.serialize({
-          ...parentArgs,
-          ...args
-        });
-      }
-    });
-    return nextFragment;
-  }
-  fragmentThunk[FRAG] = methods;
-  return fragmentThunk;
 }
 
 export function fragment(...fragments) {
   return createFragment({
     serialize(args) {
       return fragments
-        .map(frag => {
-          return getFragmentMethods(frag).serialize(args);
+        .map(fragment => {
+          if (fragment[ARGUMENT]) {
+            return serializeArgument(args, fragment);
+          }
+
+          return getFragmentMethods(fragment).serialize(args);
         })
         .join(" ");
-    }
-  });
-}
-
-export function select(...columns) {
-  return createFragment({
-    serialize(args) {
-      return `SELECT ${columns.join(", ")}`;
     }
   });
 }
