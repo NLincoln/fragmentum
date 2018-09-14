@@ -71,5 +71,7 @@
       }
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "sqlstring": "^2.3.1"
+  }
 }
