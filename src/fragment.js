@@ -6,6 +6,10 @@ function getFragmentMethods(fragment) {
   return fragment[FRAG];
 }
 
+export function isFragment(fragment) {
+  return fragment && fragment[FRAG];
+}
+
 const types = {
   fragment: Symbol("fragment"),
   resolvedArg: Symbol("resolved-arg")

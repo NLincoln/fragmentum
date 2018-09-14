@@ -13,7 +13,7 @@ table("users")
   .whereEq("user_id", id)
   .columns("*");
 
-// Decent interface for the WHERE clause, but complex queries are OUT.
+// Decent interface for the WHERE clause, but complex conditions with subqueries are OUT.
 Users.query({
   where: {
     user_id: id
@@ -33,8 +33,7 @@ let { query, binds } = builder(
 ).serialize();
 ```
 
-But I've since decided that this query builder just... _isn't_ what I want. It works _great_ for large queries (which was my original purpose), and
-it has a nice, immutable API, but something felt missing. You see, I didn't just want a full query builder, I wanted an API that
+But I've since decided that this query builder just... wasn't what I wanted. It worked _great_ for large queries (which was my original purpose),and it had a nice, immutable API, but something felt missing. You see, I didn't just want a full query builder, I wanted an API that
 could be used as a base for a full ORM and a set of related tools. The first version of fragmentum didn't cut the mustard.
 
 With that in mind, and after a few months of thought, I went back to the drawing board. Here's what I drew:
@@ -57,8 +56,8 @@ let getUser123 = getUserById({
 let { query, binds } = execute(getUser123);
 ```
 
-Let's break this down. Most things seem pretty similar: `builder` became `fragment`, `.serialize` became `execute()`
-, and the structure of the `where` fragment is almost identical. But there's two key differences:
+Let's break this down. Most things seem pretty similar: `builder` became `fragment`, `.serialize` became `execute()`,
+and the structure of the `where` fragment is almost identical. But there's two key differences:
 
 - The result of the `where` clause is being called as a function
 - There's something called `arg()` that seems to correspond with each key in the function call.
@@ -129,9 +128,11 @@ let User = Model({
 And finally, let's actually run a query using this model:
 
 ```js
-let user123Query = execute(fragment(
-  select('*'), // If we're doing a SELECT *, this can just be select()
-  User.getById({ id: 123 })
+let user123Query = execute(
+  fragment(
+    select("*"), // If we're doing a SELECT *, this can just be select()
+    User.getById({ id: 123 })
+  )
 );
 ```
 
@@ -148,9 +149,7 @@ let getCompleteRecord = fragment(
    */
   arg("model", model => model.getById)
 );
-```
 
-```js
 let user123Query = execute(
   getCompleteRecord({
     model: User,
