@@ -1,8 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`subqueries not providing a name 1`] = `
-Object {
-  "binds": Object {},
-  "query": "FROM (SELECT * FROM \\"users\\") AS \\"BUILDER_anonymous0\\"",
-}
-`;

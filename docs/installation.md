@@ -1,27 +1,27 @@
 ---
 id: installation
 title: Installation
-sidebar_label: Installation
+sidebar_label: Getting started
 ---
+
+You can install fragmentum with:
 
 ```sh
 $ yarn add fragmentum
 ```
 
-Or, for NPM users:
-```sh
-$ npm install fragmentum --save
-```
-
-Fragmentum supports Node >= 6.
-
-# Usage
-Fragmentum is packaged as a single, rolled-up commonjs bundle. Importing from anything but `fragmentum` is unsupported.
+Fragmentum, currently, does not expose `.mjs` files. If you need these, open an issue.
+That said, if you use a bundler, es imports will work:
 
 ```js
-import { builder } from 'fragmentum';
+import { fragment, execute } from "fragmentum";
 ```
-Or, for commonjs
+
+CommonJS is also supported
+
 ```js
-const { builder } = require('fragmentum');
+const { fragment, execute } = require("fragmentum");
 ```
+
+All functions come from the `fragmentum` module. There are no other entry points to the module, and the entire library is bundled
+with `rollup`.

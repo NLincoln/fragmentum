@@ -1,6 +1,7 @@
 {
   "docs": {
     "A CHALLENGER APPEARS": ["the-new-api"],
-    "Getting Started": ["installation"]
+    "Getting Started": ["installation"],
+    "Fragments": ["execute", "fragment", "arg", "subqueries", "where"]
   }
 }
