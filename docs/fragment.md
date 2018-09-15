@@ -1,5 +1,3 @@
-# `fragment()`
-
 Collects a bunch of other fragments into one.
 
 ```js

@@ -1,5 +1,3 @@
-# `arg()`
-
 An arg represents a value to be filled in later.
 
 Let's say, for example, that you want to create some generic way to query for some table:

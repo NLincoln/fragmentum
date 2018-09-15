@@ -1,5 +1,3 @@
-# Where
-
 This is the _really_ fun part of fragmentum. The first thing to note is how `where` fragments will play together
 if you specify more than one of them:
 

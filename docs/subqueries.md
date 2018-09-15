@@ -1,5 +1,3 @@
-# SubQueries
-
 Subqueries are one of the most useful and powerful parts of SQL, and getting support for them right is extremely important.
 
 Let's look at one scenario: executing a query where the table in the `from()` fragment is a subquery:

@@ -8,7 +8,6 @@ const siteConfig = {
   baseUrl: "/fragmentum/" /* base url for your project */,
   headerLinks: [
     { doc: "installation", label: "Docs" },
-    { doc: "api-reference", label: "API" },
     { page: "help", label: "Help" },
     { blog: true, label: "Blog" }
   ],

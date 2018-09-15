@@ -1,5 +1,3 @@
-# `execute`
-
 Execute properly serializes your fragment into a string.
 
 ```js
