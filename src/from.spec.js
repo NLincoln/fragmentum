@@ -1,4 +1,4 @@
-import { execute, fragment, from, select, arg } from "fragmentum";
+import { execute, fragment, from, subquery, select, arg } from "fragmentum";
 
 test("basic from statement", () => {
   let { query } = execute(from("users"));
@@ -47,12 +47,30 @@ test("renaming args with tables", () => {
   expect(query).toEqual("FROM `users`, `other-users`");
 });
 
+test("from a subquery", () => {
+  let getTable = from(
+    subquery("alias", fragment(select("username"), from(arg("table"))))
+  );
+
+  let { query } = execute(
+    fragment(
+      select("user_id"),
+      getTable({
+        table: "users"
+      })
+    )
+  );
+  expect(query).toEqual(
+    "SELECT `user_id` FROM (SELECT `username` FROM `users`) AS `alias`"
+  );
+});
+
 [
-  [null, "null"],
+  ([null, "null"],
   [Symbol(), "symbol"],
   [{}, "object"],
   [12312313, "number"],
-  [[], "array"]
+  [[], "array"])
 ].forEach(([val, desc]) => {
   test("bad input " + desc, () => {
     expect(() => {

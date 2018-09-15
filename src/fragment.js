@@ -33,6 +33,14 @@ export function getFragmentRepr(fragment, args) {
   return getFragmentMethods(fragment)(args);
 }
 
+const validateFragmentRepr = repr => {
+  if (!repr.ident) {
+    throw new Error(
+      "fragment: encountered a fragment without an ident arg. The ident arg is a value used to group fragments together."
+    );
+  }
+};
+
 export function fragment(...children) {
   return createFragment(args => {
     return {
@@ -65,22 +73,36 @@ export function fragment(...children) {
         if (args.length > 0) {
           return args.map(arg => arg.value).join(" ");
         }
+
+        resolvedChildren.forEach(validateFragmentRepr);
+
         let groupedChildren = groupBy(
           resolvedChildren,
-          child => child.ordering
+          /**
+           * Group the children by their ident. Ident is some unique
+           * identifier that can be used to group fragments together.
+           * Usually this is a symbol.
+           */
+          child => child.ident
         );
+
+        if (groupedChildren.length > 1) {
+          groupedChildren.forEach(group => {
+            if (!group[0].ordering) {
+              throw new Error(
+                "Attempted to combine two unorderable fragments."
+              );
+            }
+          });
+        }
 
         let sortedChildren = Array.from(groupedChildren)
           /**
            * Properly sort the children by their ordering
            */
-          .sort((a, b) => {
-            return a[0].ordering - b[0].ordering;
-          })
-          /**
-           * Since the lowest-ordering comes first, reverse the result (the func above does highest-first)
-           */
-          .reverse();
+          .sort((groupA, groupB) => {
+            return groupA[0].ordering - groupB[0].ordering;
+          });
 
         return (
           sortedChildren

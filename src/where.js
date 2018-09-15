@@ -2,6 +2,8 @@ import { createFragment, isFragment, fragment } from "./fragment";
 import { execute, isExecutable } from "./execute";
 import SqlString from "sqlstring";
 import { isArgument, serializeArgument } from "./arg";
+import { orderings } from "./ordering";
+const WHERE_IDENT = Symbol("where-ident");
 
 export const value = val =>
   createFragment(args => {
@@ -56,10 +58,12 @@ const validateOpParams = (config, params, min, max) => {
 export const ops = {
   createUnaryOp: config => {
     validateOpConfig(config);
+    const IDENT = Symbol(config.operand);
     return (...params) => {
       validateOpParams(config, params, 1, 1);
       return createFragment(args => {
         return {
+          ident: IDENT,
           serialize() {
             return `${config.operand} ${execute(params[0], args).query}`;
           }
@@ -69,12 +73,15 @@ export const ops = {
   },
   createBinaryOp: config => {
     validateOpConfig(config);
+    const IDENT = Symbol(config.operand);
+
     let operand = ` ${config.operand} `;
     return (...params) => {
       validateOpParams(config, params, 2, 2);
       return createFragment(args => {
         return {
           params: params.map(param => execute(param, args).query).join(operand),
+          ident: IDENT,
           serialize(repr) {
             return repr.params;
           }
@@ -84,11 +91,14 @@ export const ops = {
   },
   createVariadicOp: config => {
     validateOpConfig(config);
+    const IDENT = Symbol(config.operand);
+
     let operand = ` ${config.operand} `;
     return (...params) => {
       validateOpParams(config, params, 2, Infinity);
       return createFragment(args => {
         return {
+          ident: IDENT,
           serialize() {
             return params
               .map(param => execute(param, args).query)
@@ -129,6 +139,8 @@ export const where = (...conditions) => {
     return {
       wrap: val => `WHERE ` + val,
       combine: wheres => wheres.join(" AND "),
+      ident: WHERE_IDENT,
+      ordering: orderings.where,
       serialize(repr) {
         return execute(fragment(...conditions), args).query;
       }

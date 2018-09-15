@@ -1,4 +1,4 @@
-import { select, execute, fragment, arg } from "fragmentum";
+import { select, execute, fragment, arg, from } from "fragmentum";
 
 test("basic select", () => {
   let { query } = execute(select("id"));
