@@ -1,0 +1,87 @@
+<html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>fragment · Fragmentum</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="fragment · Fragmentum"/><meta property="og:type" content="website"/><meta property="og:url" content="https://nlincoln.github.io//fragmentum/index.html"/><meta property="og:description" content="Collects a bunch of other fragments into one."/><link rel="shortcut icon" href="/fragmentum/null"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://nlincoln.github.io//blog/atom.xml" title="Fragmentum Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://nlincoln.github.io//blog/feed.xml" title="Fragmentum Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/fragmentum/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fragmentum/"><h2 class="headerTitle">Fragmentum</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/fragmentum/docs/installation.html" target="_self">Docs</a></li><li><a href="/fragmentum/en/help.html" target="_self">Help</a></li><li><a href="/fragmentum/blog" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Fragments</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>A CHALLENGER APPEARS</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/the-new-api.html">The New API</a></li></ul></div><div class="navGroup navGroupActive"><h3>Getting Started</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/installation.html">Getting started</a></li></ul></div><div class="navGroup navGroupActive"><h3>Fragments</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/execute.html">execute</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/fragmentum/docs/fragment.html">fragment</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/arg.html">arg</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/subqueries.html">subqueries</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/where.html">where</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>fragment</h1></header><article><div><span><p>Collects a bunch of other fragments into one.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> getUserTable = fragment(
+  select(<span class="hljs-string">"id"</span>),
+  select(<span class="hljs-string">"user_id"</span>, <span class="hljs-string">"email"</span>),
+  <span class="hljs-keyword">from</span>(<span class="hljs-string">"users"</span>)
+);
+</code></pre>
+<p>Fragments can also consume other fragmnents. The following is equivalent to the above:</p>
+<pre><code class="hljs css js">fragment(
+  fragment(select(<span class="hljs-string">"id"</span>)),
+  fragment(select(<span class="hljs-string">"user_id"</span>, <span class="hljs-string">"email"</span>), <span class="hljs-keyword">from</span>(<span class="hljs-string">"users"</span>))
+);
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" name="createfragment"></a><a href="#createfragment" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>createFragment</code></h1>
+<p>Fragmentum allows you to create your own fragments.</p>
+<p>WARNING: This is a super low-level API, and I don't anticipate you'll need to use it too much. Please, if you encounter
+an issue for which you think you need <code>createFragment</code>, please, please open an issue on github first. No guarantees that I'll
+put your use-case into <code>fragmentum</code>'s core, but I want to get a good understanding of what use-case people might have for this primitive.</p>
+<p>Without further ado, here is how to create custom fragments, as well as some explanation of the fragmentum internals.</p>
+<h2><a class="anchor" aria-hidden="true" name="example-special-counter"></a><a href="#example-special-counter" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>example: <code>SPECIAL_COUNTER</code></h2>
+<p>Let's look at a small example: Adding a <code>SPECIAL_COUNTER(...args)</code> fragment</p>
+<p>This fragment would be used like this:</p>
+<pre><code class="hljs css js">execute(fragment(specialCounter(arg(<span class="hljs-string">"counter"</span>)), select(), <span class="hljs-keyword">from</span>(<span class="hljs-string">"users"</span>)), {
+  <span class="hljs-attr">counter</span>: <span class="hljs-string">"counterID"</span>
+});
+</code></pre>
+<p>Resulting in:</p>
+<pre><code class="hljs css sql"><span class="hljs-keyword">SELECT</span> * SPECIAL_COUNTER(<span class="hljs-string">`counterID`</span>) <span class="hljs-keyword">FROM</span> <span class="hljs-string">`users`</span>
+</code></pre>
+<p>Meaning we need to accept some kind of args, and be able to be ordered and grouped.</p>
+<p>One implementation of this fragment would be the following:</p>
+<pre><code class="hljs css js"><span class="hljs-comment">/**
+ * `ident` allows your fragment to be grouped together with other fragments.
+ * We create ONLY ONE symbol, otherwise the grouping behavior won't work.
+ */</span>
+<span class="hljs-keyword">let</span> IDENT = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">"special-counter"</span>);
+<span class="hljs-comment">/**
+ * This is the function invoked when building your SQL query.
+ */</span>
+<span class="hljs-keyword">let</span> specialCounter = <span class="hljs-function"><span class="hljs-params">id</span> =&gt;</span> {
+  <span class="hljs-comment">/**
+   * createFragment accepts one argument, the "repr" function.
+   * The repr function is invoked during the first pass at serialization, when all the args were resolved.
+   */</span>
+  <span class="hljs-keyword">return</span> createFragment(<span class="hljs-function"><span class="hljs-params">args</span> =&gt;</span> {
+    <span class="hljs-comment">/**
+     * At this point, we're in the "repr" phase of building the query.
+     * At this moment, the `execute` function has been called, and all of the args
+     * have been provided to our fragment
+     */</span>
+    <span class="hljs-comment">/**
+     * In order to resolve any args &amp; escape any strings, call `execute` on any value with the args we have here
+     * I think of this as "forwarding" the args
+     */</span>
+    id = execute(id, args).query;
+
+    <span class="hljs-comment">/**
+     * There are only 2 required values on the result of the repr function:
+     * - an `ident` that uniquely identifies this fragment type
+     * - a `serialize` function that returns the fragment in string form.
+     *
+     * Optional results are:
+     * - `ordering`: a number that defines where this fragment belongs in a serialized query.
+     * - `wrap`: Wraps the result of calling `serialize` together on multiple fragments
+     * - `combine`: combines multiple instances of `serialize`
+     */</span>
+    <span class="hljs-keyword">return</span> {
+      id,
+      <span class="hljs-attr">ident</span>: IDENT,
+      <span class="hljs-comment">/**
+       * Since select has an ordering of 10, and from has an ordering of 20, 15 will put `SPECIAL_COUNTER` between them
+       */</span>
+      ordering: <span class="hljs-number">15</span>,
+      serialize(repr) {
+        <span class="hljs-keyword">return</span> <span class="hljs-string">`SPECIAL_COUNTER(<span class="hljs-subst">${repr.id}</span>)`</span>;
+      }
+    };
+  });
+};
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="execute.html">← execute</a><a class="docs-next button" href="arg.html">arg →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/fragmentum/" class="nav-home"></a><div><h5>Docs</h5><a href="/fragmentum/docs/en/doc1.html">Getting Started (or other categories)</a><a href="/fragmentum/docs/en/doc2.html">Guides (or other categories)</a><a href="/fragmentum/docs/en/doc3.html">API Reference (or other categories)</a></div><div><h5>Community</h5><a href="https://twitter.com/" target="_blank">Twitter</a><a href="https://github.com/NLincoln/fragmentum" target="_blank">GitHub</a></div><div><h5>More</h5><a href="/fragmentum/blog">Blog</a><a href="https://github.com/NLincoln/fragmentum">GitHub</a><a class="github-button" href="https://github.com/NLincoln/fragmentum" data-icon="octicon-star" data-count-href="/NLincoln/fragmentum/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2018 Nathan Lincoln</section></footer></div></body></html>

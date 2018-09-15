@@ -1,0 +1,70 @@
+<html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>where · Fragmentum</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="where · Fragmentum"/><meta property="og:type" content="website"/><meta property="og:url" content="https://nlincoln.github.io//fragmentum/index.html"/><meta property="og:description" content="This is the _really_ fun part of fragmentum. The first thing to note is how `where` fragments will play together"/><link rel="shortcut icon" href="/fragmentum/null"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://nlincoln.github.io//blog/atom.xml" title="Fragmentum Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://nlincoln.github.io//blog/feed.xml" title="Fragmentum Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/fragmentum/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fragmentum/"><h2 class="headerTitle">Fragmentum</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/fragmentum/docs/installation.html" target="_self">Docs</a></li><li><a href="/fragmentum/en/help.html" target="_self">Help</a></li><li><a href="/fragmentum/blog" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Fragments</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>A CHALLENGER APPEARS</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/the-new-api.html">The New API</a></li></ul></div><div class="navGroup navGroupActive"><h3>Getting Started</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/installation.html">Getting started</a></li></ul></div><div class="navGroup navGroupActive"><h3>Fragments</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/execute.html">execute</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/fragment.html">fragment</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/arg.html">arg</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/subqueries.html">subqueries</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/fragmentum/docs/where.html">where</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>where</h1></header><article><div><span><p>This is the <em>really</em> fun part of fragmentum. The first thing to note is how <code>where</code> fragments will play together
+if you specify more than one of them:</p>
+<pre><code class="hljs css js">fragment(
+  <span class="hljs-comment">// (don't worry about the `ops` and `value`, we'll get to those in a sec)</span>
+  where(ops.eq(<span class="hljs-string">"user_id"</span>, value(<span class="hljs-number">123</span>))),
+  where(ops.eq(<span class="hljs-string">"username"</span>, value(<span class="hljs-string">"nlincoln"</span>)))
+);
+
+<span class="hljs-comment">// Produces WHERE `user_id` = 123 AND `username` = 'nlincoln'</span>
+</code></pre>
+<p>Note that we use the <code>sqlstring</code> library to escape values provided. Eventually the goal is to provide support for bind params,
+but that isn't possible quite yet.</p>
+<h1><a class="anchor" aria-hidden="true" name="ops"></a><a href="#ops" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Ops</h1>
+<p>The following ops are currently supported:</p>
+<ul>
+<li><code>ops.eq</code>: =</li>
+<li><code>ops.ne</code>: !=</li>
+<li><code>ops.lt</code>: &lt;</li>
+<li><code>ops.gt</code>: &gt;</li>
+<li><code>ops.add</code>: +</li>
+<li><code>ops.in</code>: IN</li>
+<li><code>ops.like</code>: LIKE</li>
+</ul>
+<p>However, this doesn't come close to comprising the full set of operations in SQL. No attempt is made to exhaustively
+support the full set of SQL ops.</p>
+<p>Instead, the low-level primitives that the above ops use are exposed to the user of the library. One day, a separate support
+library might be created with full support, but that would depend on the demand. If you want it, and are willing to help
+support it, open an issue :)</p>
+<h1><a class="anchor" aria-hidden="true" name="creating-custom-ops"></a><a href="#creating-custom-ops" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating custom ops</h1>
+<p>If <code>fragmentum</code> doesn't have an op that you need (extremely likely), fragmentum exposes the primitive it uses to create the rest
+of the ops. They are <code>createBinaryOp</code>, <code>createVariadicOp</code> and <code>createUnaryOp</code></p>
+<p>Note that both of these functions use <code>createFragment</code> under the hood, so if you need something <em>really</em> custom, you're free
+to use that.</p>
+<h2><a class="anchor" aria-hidden="true" name="opscreatebinaryop"></a><a href="#opscreatebinaryop" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ops.createBinaryOp</code></h2>
+<p>Creates an op with a defined left-hand side and a defined right-hand side. <code>createBinaryOp</code> automatically validates that
+there are exactly two arguments to your op, and that they are both fragments / arguments / strings.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> monadic = ops.createBinaryOp({
+  <span class="hljs-attr">operand</span>: <span class="hljs-string">"&gt;&gt;="</span>
+});
+
+execute(monadic(<span class="hljs-string">"lhs"</span>, <span class="hljs-string">"rhs"</span>));
+(<span class="hljs-string">"`lhs` &gt;&gt;= `rhs`"</span>);
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="opscreatevariadicop"></a><a href="#opscreatevariadicop" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ops.createVariadicOp</code></h2>
+<p>Sometimes you need the op to support <em>two or more</em> arguments (such as with addition <code>+</code>). In this case, use <code>createVariadicOp</code>.
+Like <code>createBinaryOp</code>, it will validate that your op has at least 2 arguments, and that each argument is a permissible value.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> superSum = ops.createVariadicOp({
+  <span class="hljs-attr">operand</span>: <span class="hljs-string">"++"</span>
+});
+
+execute(superSum(<span class="hljs-string">"first"</span>, <span class="hljs-string">"second"</span>, <span class="hljs-string">"third"</span>));
+(<span class="hljs-string">"`first` ++ `second` ++ `third`"</span>);
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="opscreateunaryop"></a><a href="#opscreateunaryop" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ops.createUnaryOp</code></h2>
+<p>Finally, there are cases like <code>in</code> or <code>like</code> that must be supported. These come under the purview of <code>createUnaryOp</code>.
+Once again, it will validate that exactly one argument has been passed, and that each argument is a permissible value.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> customUnaryOp = ops.createUnaryOp({
+  <span class="hljs-attr">operand</span>: <span class="hljs-string">"custom"</span>
+});
+execute(customUnaryOp(value(<span class="hljs-string">"some value"</span>)));
+(<span class="hljs-string">"custom 'some value'"</span>);
+</code></pre>
+<p>(To be honest, I'm not sure what the legitimate use cases for this API are, but I'm exposing it nonetheless for completeness)</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="subqueries.html">← subqueries</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/fragmentum/" class="nav-home"></a><div><h5>Docs</h5><a href="/fragmentum/docs/en/doc1.html">Getting Started (or other categories)</a><a href="/fragmentum/docs/en/doc2.html">Guides (or other categories)</a><a href="/fragmentum/docs/en/doc3.html">API Reference (or other categories)</a></div><div><h5>Community</h5><a href="https://twitter.com/" target="_blank">Twitter</a><a href="https://github.com/NLincoln/fragmentum" target="_blank">GitHub</a></div><div><h5>More</h5><a href="/fragmentum/blog">Blog</a><a href="https://github.com/NLincoln/fragmentum">GitHub</a><a class="github-button" href="https://github.com/NLincoln/fragmentum" data-icon="octicon-star" data-count-href="/NLincoln/fragmentum/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2018 Nathan Lincoln</section></footer></div></body></html>

@@ -1,4 +1,4 @@
-<html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>New Stuff · Fragmentum</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="New Stuff · Fragmentum"/><meta property="og:type" content="website"/><meta property="og:url" content="https://nlincoln.github.io//fragmentum/index.html"/><meta property="og:description" content="I&#x27;ve never found a SQL query builder I liked. They&#x27;re all either too underpowered, or rely on mutable state, or"/><link rel="shortcut icon" href="/fragmentum/null"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://nlincoln.github.io//blog/atom.xml" title="Fragmentum Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://nlincoln.github.io//blog/feed.xml" title="Fragmentum Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/fragmentum/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fragmentum/"><h2 class="headerTitle">Fragmentum</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/fragmentum/docs/installation.html" target="_self">Docs</a></li><li><a href="/fragmentum/docs/api-reference.html" target="_self">API</a></li><li><a href="/fragmentum/en/help.html" target="_self">Help</a></li><li><a href="/fragmentum/blog" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>A CHALLENGER APPEARS</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>A CHALLENGER APPEARS</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/fragmentum/docs/the-new-api.html">The New API</a></li></ul></div><div class="navGroup navGroupActive"><h3>Getting Started</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/installation.html">Installation</a></li></ul></div></div></section></div><script>
+<html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>New Stuff · Fragmentum</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="New Stuff · Fragmentum"/><meta property="og:type" content="website"/><meta property="og:url" content="https://nlincoln.github.io//fragmentum/index.html"/><meta property="og:description" content="I&#x27;ve never found a SQL query builder I liked. They&#x27;re all either too underpowered, or rely on mutable state, or"/><link rel="shortcut icon" href="/fragmentum/null"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://nlincoln.github.io//blog/atom.xml" title="Fragmentum Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://nlincoln.github.io//blog/feed.xml" title="Fragmentum Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/fragmentum/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fragmentum/"><h2 class="headerTitle">Fragmentum</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/fragmentum/docs/installation.html" target="_self">Docs</a></li><li><a href="/fragmentum/en/help.html" target="_self">Help</a></li><li><a href="/fragmentum/blog" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>A CHALLENGER APPEARS</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>A CHALLENGER APPEARS</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/fragmentum/docs/the-new-api.html">The New API</a></li></ul></div><div class="navGroup navGroupActive"><h3>Getting Started</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/installation.html">Getting started</a></li></ul></div><div class="navGroup navGroupActive"><h3>Fragments</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/execute.html">execute</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/fragment.html">fragment</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/arg.html">arg</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/subqueries.html">subqueries</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/where.html">where</a></li></ul></div></div></section></div><script>
           var toggler = document.getElementById('navToggler');
           var nav = document.getElementById('docsNav');
           toggler.onclick = function() {
@@ -11,7 +11,7 @@ table(<span class="hljs-string">"users"</span>)
   .whereEq(<span class="hljs-string">"user_id"</span>, id)
   .columns(<span class="hljs-string">"*"</span>);
 
-<span class="hljs-comment">// Decent interface for the WHERE clause, but complex queries are OUT.</span>
+<span class="hljs-comment">// Decent interface for the WHERE clause, but complex conditions with subqueries are OUT.</span>
 Users.query({
   <span class="hljs-attr">where</span>: {
     <span class="hljs-attr">user_id</span>: id
@@ -27,8 +27,7 @@ Users.query({
   where(ops.eq(<span class="hljs-string">"user_id"</span>, value(<span class="hljs-string">"abc"</span>)))
 ).serialize();
 </code></pre>
-<p>But I've since decided that this query builder just... <em>isn't</em> what I want. It works <em>great</em> for large queries (which was my original purpose), and
-it has a nice, immutable API, but something felt missing. You see, I didn't just want a full query builder, I wanted an API that
+<p>But I've since decided that this query builder just... wasn't what I wanted. It worked <em>great</em> for large queries (which was my original purpose),and it had a nice, immutable API, but something felt missing. You see, I didn't just want a full query builder, I wanted an API that
 could be used as a base for a full ORM and a set of related tools. The first version of fragmentum didn't cut the mustard.</p>
 <p>With that in mind, and after a few months of thought, I went back to the drawing board. Here's what I drew:</p>
 <pre><code class="hljs css js"><span class="hljs-keyword">let</span> getById = where(ops.eq(arg(<span class="hljs-string">"primaryKey"</span>), arg(<span class="hljs-string">"id"</span>, id =&gt; <span class="hljs-built_in">escape</span>(id))));
@@ -47,8 +46,8 @@ could be used as a base for a full ORM and a set of related tools. The first ver
 
 <span class="hljs-keyword">let</span> { query, binds } = execute(getUser123);
 </code></pre>
-<p>Let's break this down. Most things seem pretty similar: <code>builder</code> became <code>fragment</code>, <code>.serialize</code> became <code>execute()</code>
-, and the structure of the <code>where</code> fragment is almost identical. But there's two key differences:</p>
+<p>Let's break this down. Most things seem pretty similar: <code>builder</code> became <code>fragment</code>, <code>.serialize</code> became <code>execute()</code>,
+and the structure of the <code>where</code> fragment is almost identical. But there's two key differences:</p>
 <ul>
 <li>The result of the <code>where</code> clause is being called as a function</li>
 <li>There's something called <code>arg()</code> that seems to correspond with each key in the function call.</li>
@@ -104,9 +103,11 @@ in the path handler proper.</p>
 });
 </code></pre>
 <p>And finally, let's actually run a query using this model:</p>
-<pre><code class="hljs css js"><span class="hljs-keyword">let</span> user123Query = execute(fragment(
-  select(<span class="hljs-string">'*'</span>), <span class="hljs-comment">// If we're doing a SELECT *, this can just be select()</span>
-  User.getById({ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span> })
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> user123Query = execute(
+  fragment(
+    select(<span class="hljs-string">"*"</span>), <span class="hljs-comment">// If we're doing a SELECT *, this can just be select()</span>
+    User.getById({ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span> })
+  )
 );
 </code></pre>
 <p>It looks a little annoying. Why can't we just call <code>User.getById</code>? We could, except we avoided setting any columns during the
@@ -119,8 +120,8 @@ model definition. That means we still have to specify what columns we want.</p>
    */</span>
   arg(<span class="hljs-string">"model"</span>, model =&gt; model.getById)
 );
-</code></pre>
-<pre><code class="hljs css js"><span class="hljs-keyword">let</span> user123Query = execute(
+
+<span class="hljs-keyword">let</span> user123Query = execute(
   getCompleteRecord({
     <span class="hljs-attr">model</span>: User,
     <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>

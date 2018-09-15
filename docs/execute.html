@@ -1,0 +1,46 @@
+<html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>execute · Fragmentum</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="execute · Fragmentum"/><meta property="og:type" content="website"/><meta property="og:url" content="https://nlincoln.github.io//fragmentum/index.html"/><meta property="og:description" content="Execute properly serializes your fragment into a string."/><link rel="shortcut icon" href="/fragmentum/null"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://nlincoln.github.io//blog/atom.xml" title="Fragmentum Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://nlincoln.github.io//blog/feed.xml" title="Fragmentum Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/fragmentum/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fragmentum/"><h2 class="headerTitle">Fragmentum</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/fragmentum/docs/installation.html" target="_self">Docs</a></li><li><a href="/fragmentum/en/help.html" target="_self">Help</a></li><li><a href="/fragmentum/blog" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Fragments</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>A CHALLENGER APPEARS</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/the-new-api.html">The New API</a></li></ul></div><div class="navGroup navGroupActive"><h3>Getting Started</h3><ul><li class="navListItem"><a class="navItem" href="/fragmentum/docs/installation.html">Getting started</a></li></ul></div><div class="navGroup navGroupActive"><h3>Fragments</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/fragmentum/docs/execute.html">execute</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/fragment.html">fragment</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/arg.html">arg</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/subqueries.html">subqueries</a></li><li class="navListItem"><a class="navItem" href="/fragmentum/docs/where.html">where</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>execute</h1></header><article><div><span><p>Execute properly serializes your fragment into a string.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> getUsers = fragment(select(<span class="hljs-string">"id"</span>), <span class="hljs-keyword">from</span>(<span class="hljs-string">"users"</span>));
+
+<span class="hljs-keyword">let</span> { query } = execute(getUsers);
+</code></pre>
+<p>Additionally, <code>execute</code> can accept a set of initial arguments.
+I really don't recommend you use this feature, as I'm thinking about removing it (you can easily call the fragment function)
+but it can be useful when defining your own fragments, so I'll leave it.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">let</span> getTable = fragment(<span class="hljs-keyword">from</span>(arg(<span class="hljs-string">"table"</span>)));
+
+<span class="hljs-keyword">let</span> { query } = execute(getTable, {
+  <span class="hljs-attr">table</span>: <span class="hljs-string">"users"</span>
+});
+</code></pre>
+<p>Mostly, though, you want to use this in the scenario where you're writing a custom fragment, and you need to serialize
+a subquery.</p>
+<pre><code class="hljs css js"><span class="hljs-keyword">import</span> { createFragment, isFragment, execute } <span class="hljs-keyword">from</span> <span class="hljs-string">"fragmentum"</span>;
+<span class="hljs-keyword">let</span> customFragment = <span class="hljs-function">(<span class="hljs-params">...fields</span>) =&gt;</span>
+  createFragment(<span class="hljs-function"><span class="hljs-params">args</span> =&gt;</span> {
+    <span class="hljs-keyword">return</span> {
+      serialize() {
+        <span class="hljs-keyword">return</span> fields.map(<span class="hljs-function"><span class="hljs-params">field</span> =&gt;</span> {
+          <span class="hljs-keyword">if</span> (isFragment(field)) {
+            <span class="hljs-keyword">return</span> execute(field, args);
+          }
+        });
+      }
+    };
+  });
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" name="executing-args"></a><a href="#executing-args" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Executing args</h1>
+<p>It's an uncommon use case, but the API for executing with initial args can be used to execute an arg directly:</p>
+<pre><code class="hljs css js">execute(arg(<span class="hljs-string">"table"</span>), { <span class="hljs-attr">table</span>: <span class="hljs-string">"users "</span> });
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" name="isexecutable"></a><a href="#isexecutable" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>isExecutable</code></h1>
+<p>A generic utility to test whether your value is something that can be passed to <code>execute</code>.</p>
+<p>Note that this doesn't (yet?) check for whether or not the fragment is <em>sound</em>, e.g. that all of the
+argument fragments are filled in. Currently that would require executing the fragment, but the goal is
+to make that info knowable without execution.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="installation.html">← Installation</a><a class="docs-next button" href="fragment.html">fragment →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/fragmentum/" class="nav-home"></a><div><h5>Docs</h5><a href="/fragmentum/docs/en/doc1.html">Getting Started (or other categories)</a><a href="/fragmentum/docs/en/doc2.html">Guides (or other categories)</a><a href="/fragmentum/docs/en/doc3.html">API Reference (or other categories)</a></div><div><h5>Community</h5><a href="https://twitter.com/" target="_blank">Twitter</a><a href="https://github.com/NLincoln/fragmentum" target="_blank">GitHub</a></div><div><h5>More</h5><a href="/fragmentum/blog">Blog</a><a href="https://github.com/NLincoln/fragmentum">GitHub</a><a class="github-button" href="https://github.com/NLincoln/fragmentum" data-icon="octicon-star" data-count-href="/NLincoln/fragmentum/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2018 Nathan Lincoln</section></footer></div></body></html>
