@@ -38,3 +38,19 @@ let customFragment = (...fields) =>
     };
   });
 ```
+
+# Executing args
+
+It's an uncommon use case, but the API for executing with initial args can be used to execute an arg directly:
+
+```js
+execute(arg("table"), { table: "users " });
+```
+
+# `isExecutable`
+
+A generic utility to test whether your value is something that can be passed to `execute`.
+
+Note that this doesn't (yet?) check for whether or not the fragment is _sound_, e.g. that all of the
+argument fragments are filled in. Currently that would require executing the fragment, but the goal is
+to make that info knowable without execution.

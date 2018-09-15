@@ -86,7 +86,11 @@ export function fragment(...children) {
           sortedChildren
             .map(group => {
               let serialized = group.map(child => child.serialize(child));
-              return group[0].wrap(group[0].combine(serialized));
+              let combined = group[0].combine
+                ? group[0].combine(serialized)
+                : serialized;
+              let wrapped = group[0].wrap ? group[0].wrap(combined) : combined;
+              return wrapped;
             })
             /**
              * Groups of fragments are separated by spaces.
