@@ -1,0 +1,31 @@
+{
+  "plugins": ["transform-object-rest-spread"],
+  "env": {
+    "build": {
+      "plugins": ["external-helpers"],
+      "presets": [
+        [
+          "babel-preset-env",
+          {
+            "modules": false,
+            "targets": {
+              "node": "8"
+            }
+          }
+        ]
+      ]
+    },
+    "test": {
+      "presets": [
+        [
+          "babel-preset-env",
+          {
+            "targets": {
+              "node": "8"
+            }
+          }
+        ]
+      ]
+    }
+  }
+}

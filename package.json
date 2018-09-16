@@ -3,17 +3,19 @@
   "version": "0.7.0",
   "description": "A SQL Query builder optimized for backend applications",
   "main": "dist/bundle.js",
+  "module": "dist/bundle.m.js",
+  "browser": "dist/bundle.umd.js",
   "author": "Nathan Lincoln <nlincoln@intellifarms.com>",
   "repository": "NLincoln/fragmentum",
   "license": "MIT",
   "engines": {
-    "node": ">= 6.x"
+    "node": ">= 8.x"
   },
   "scripts": {
-    "test": "jest --watch --coverage",
+    "test": "jest --watch --coverage --config jest.dev.js",
+    "test:ci": "jest --ci --config jest.prod.js",
     "build": "BABEL_ENV=build rollup -c",
-    "prepublish": "yarn build",
-    "test:ci": "jest --ci"
+    "prepublish": "yarn build"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -22,56 +24,10 @@
     "babel-preset-env": "^1.6.1",
     "jest": "^23.6.0",
     "prettier": "^1.14.2",
-    "rollup": "^0.55.5",
-    "rollup-plugin-babel": "^3.0.3"
-  },
-  "jest": {
-    "verbose": true,
-    "moduleNameMapper": {
-      "fragmentum": "<rootDir>/src/index.js"
-    },
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/tests/*"
-    ],
-    "coverageReporters": [
-      "text-summary",
-      "lcov"
-    ]
-  },
-  "babel": {
-    "plugins": [
-      "transform-object-rest-spread"
-    ],
-    "env": {
-      "build": {
-        "plugins": [
-          "external-helpers"
-        ],
-        "presets": [
-          [
-            "babel-preset-env",
-            {
-              "modules": false,
-              "targets": {
-                "node": "6"
-              }
-            }
-          ]
-        ]
-      },
-      "test": {
-        "presets": [
-          [
-            "babel-preset-env",
-            {
-              "targets": {
-                "node": "6"
-              }
-            }
-          ]
-        ]
-      }
-    }
+    "rollup": "^0.65.2",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^9.1.6",
+    "rollup-plugin-node-resolve": "^3.4.0"
   },
   "dependencies": {
     "sqlstring": "^2.3.1"

@@ -18,10 +18,7 @@ const types = {
 export function createFragment(createRepr) {
   function fragmentThunk(args) {
     let nextFragment = createFragment(parentArgs => {
-      return createRepr({
-        ...parentArgs,
-        ...args
-      });
+      return createRepr(Object.assign({}, parentArgs, args));
     });
     return nextFragment;
   }
